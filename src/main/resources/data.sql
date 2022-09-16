@@ -1,0 +1,1 @@
+INSERT INTO employees (id, name, role) VALUES (1, 'User-1', 'ADMIN');

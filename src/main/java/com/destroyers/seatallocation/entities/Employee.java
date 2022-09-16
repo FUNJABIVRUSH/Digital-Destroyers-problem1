@@ -1,7 +1,7 @@
 package com.destroyers.seatallocation.entities;
 
 
-import com.destroyers.seatallocation.model.EmployeeRole;
+import com.destroyers.seatallocation.model.employee.EmployeeRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +15,8 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "employee")
+@Table(name = "employees")
+@Entity
 public class Employee {
 
     @Id

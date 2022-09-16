@@ -1,4 +1,4 @@
-package com.destroyers.seatallocation.model;
+package com.destroyers.seatallocation.model.employee;
 
 public enum EmployeeRole {
     ADMIN,
