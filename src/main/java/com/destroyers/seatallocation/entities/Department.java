@@ -1,7 +1,5 @@
 package com.destroyers.seatallocation.entities;
 
-
-import com.destroyers.seatallocation.model.employee.EmployeeRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,17 +11,11 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "employees")
+@Table(name = "departments")
 @Entity
-public class Employee {
-
+public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String mpid;
     private String name;
-    @Enumerated(EnumType.STRING)
-    private EmployeeRole role;
-
-
 }
