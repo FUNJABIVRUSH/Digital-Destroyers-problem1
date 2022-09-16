@@ -11,12 +11,11 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class EmployeeResponse {
-    private Long id;
     private String mpid;
     private String name;
     private EmployeeRole role;
 
     public static EmployeeResponse from(Employee employee) {
-        return new EmployeeResponse(employee.getId(), employee.getMpid(), employee.getName(), employee.getRole());
+        return new EmployeeResponse(employee.getMpid(), employee.getName(), employee.getRole());
     }
 }
