@@ -1,7 +1,7 @@
-package com.destroyers.seatallocation.service;
+package com.destroyers.spaceallocation.service;
 
-import com.destroyers.seatallocation.dao.EmployeeDao;
-import com.destroyers.seatallocation.model.employee.EmployeeResponse;
+import com.destroyers.spaceallocation.dao.EmployeeDao;
+import com.destroyers.spaceallocation.model.employee.EmployeeResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.destroyers.seatallocation;
+package com.destroyers.spaceallocation;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

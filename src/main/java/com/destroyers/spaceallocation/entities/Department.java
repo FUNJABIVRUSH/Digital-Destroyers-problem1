@@ -1,5 +1,4 @@
-package com.destroyers.seatallocation.entities;
-
+package com.destroyers.spaceallocation.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,19 +11,11 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "oe_codes")
+@Table(name = "departments")
 @Entity
-public class OECode {
-
+public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-
-    @Column(name = "total_employees")
-    private Integer totalEmployees;
-
-    @ManyToOne()
-    @JoinColumn(name = "department_id", referencedColumnName = "id")
-    private Department department;
 }

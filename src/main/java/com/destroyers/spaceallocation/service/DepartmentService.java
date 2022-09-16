@@ -1,10 +1,10 @@
-package com.destroyers.seatallocation.service;
+package com.destroyers.spaceallocation.service;
 
-import com.destroyers.seatallocation.dao.DepartmentDao;
-import com.destroyers.seatallocation.dao.OECodeDao;
-import com.destroyers.seatallocation.entities.Department;
-import com.destroyers.seatallocation.entities.OECode;
-import com.destroyers.seatallocation.model.department.DepartmentResponse;
+import com.destroyers.spaceallocation.dao.DepartmentDao;
+import com.destroyers.spaceallocation.dao.OECodeDao;
+import com.destroyers.spaceallocation.entities.Department;
+import com.destroyers.spaceallocation.entities.OECode;
+import com.destroyers.spaceallocation.model.department.DepartmentResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

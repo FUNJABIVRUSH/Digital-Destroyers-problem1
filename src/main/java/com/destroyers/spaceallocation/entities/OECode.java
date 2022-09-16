@@ -1,8 +1,6 @@
-package com.destroyers.seatallocation.entities;
+package com.destroyers.spaceallocation.entities;
 
 
-import com.destroyers.seatallocation.model.employee.EmployeeRole;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,17 +12,19 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "employees")
+@Table(name = "oe_codes")
 @Entity
-public class Employee {
+public class OECode {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String mpid;
     private String name;
-    @Enumerated(EnumType.STRING)
-    private EmployeeRole role;
 
+    @Column(name = "total_employees")
+    private Integer totalEmployees;
 
+    @ManyToOne()
+    @JoinColumn(name = "department_id", referencedColumnName = "id")
+    private Department department;
 }

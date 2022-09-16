@@ -1,6 +1,6 @@
-package com.destroyers.seatallocation.model.employee;
+package com.destroyers.spaceallocation.model.employee;
 
-import com.destroyers.seatallocation.entities.Employee;
+import com.destroyers.spaceallocation.entities.Employee;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

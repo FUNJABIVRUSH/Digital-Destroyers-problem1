@@ -1,6 +1,6 @@
-package com.destroyers.seatallocation.dao;
+package com.destroyers.spaceallocation.dao;
 
-import com.destroyers.seatallocation.entities.Department;
+import com.destroyers.spaceallocation.entities.Department;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 @org.springframework.stereotype.Repository

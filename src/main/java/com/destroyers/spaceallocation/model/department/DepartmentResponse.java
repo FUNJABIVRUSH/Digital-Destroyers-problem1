@@ -1,6 +1,6 @@
-package com.destroyers.seatallocation.model.department;
+package com.destroyers.spaceallocation.model.department;
 
-import com.destroyers.seatallocation.entities.Department;
+import com.destroyers.spaceallocation.entities.Department;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

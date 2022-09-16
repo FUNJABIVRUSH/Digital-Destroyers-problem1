@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.destroyers</groupId>
-    <artifactId>seat-allocation</artifactId>
+    <artifactId>space-allocation</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <properties>
         <java.version>11</java.version>

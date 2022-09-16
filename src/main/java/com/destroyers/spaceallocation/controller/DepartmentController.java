@@ -1,7 +1,7 @@
-package com.destroyers.seatallocation.controller;
+package com.destroyers.spaceallocation.controller;
 
-import com.destroyers.seatallocation.model.department.DepartmentResponse;
-import com.destroyers.seatallocation.service.DepartmentService;
+import com.destroyers.spaceallocation.model.department.DepartmentResponse;
+import com.destroyers.spaceallocation.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

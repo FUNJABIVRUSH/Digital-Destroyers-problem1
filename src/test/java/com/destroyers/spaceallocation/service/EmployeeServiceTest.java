@@ -1,8 +1,8 @@
-package com.destroyers.seatallocation.service;
+package com.destroyers.spaceallocation.service;
 
-import com.destroyers.seatallocation.dao.EmployeeDao;
-import com.destroyers.seatallocation.entities.Employee;
-import com.destroyers.seatallocation.model.employee.EmployeeResponse;
+import com.destroyers.spaceallocation.dao.EmployeeDao;
+import com.destroyers.spaceallocation.entities.Employee;
+import com.destroyers.spaceallocation.model.employee.EmployeeResponse;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static com.destroyers.seatallocation.model.employee.EmployeeRole.ADMIN;
+import static com.destroyers.spaceallocation.model.employee.EmployeeRole.ADMIN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
