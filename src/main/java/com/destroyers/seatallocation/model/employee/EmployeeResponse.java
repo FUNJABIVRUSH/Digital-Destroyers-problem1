@@ -4,10 +4,12 @@ import com.destroyers.seatallocation.entities.Employee;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @AllArgsConstructor
 @EqualsAndHashCode
+@ToString
 public class EmployeeResponse {
     private Long id;
     private String mpid;

@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.destroyers.seatallocation.model.employee.EmployeeRole.ADMIN;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,4 +40,19 @@ class EmployeeServiceTest {
             assertThat(employees).contains(new EmployeeResponse(1L, "M12345", "User-1", ADMIN));
         }
     }
+
+    @Nested
+    class GetEmployeeByMpidTest {
+
+        @Test
+        void shouldReturnEmployeeByMpid() {
+            Employee employee = new Employee(1L, "M12345", "User-1", ADMIN);
+            when(employeeDao.findByMpid(employee.getMpid())).thenReturn(Optional.of(employee));
+
+            EmployeeResponse employeeResponse = employeeService.getByMpid(employee.getMpid());
+
+            assertThat(employeeResponse).isEqualTo(new EmployeeResponse(1L, "M12345", "User-1", ADMIN));
+        }
+    }
+
 }
