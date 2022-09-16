@@ -2,10 +2,12 @@ package com.destroyers.seatallocation.service;
 
 import com.destroyers.seatallocation.dao.EmployeeDao;
 import com.destroyers.seatallocation.model.employee.EmployeeResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,7 +15,9 @@ import java.util.stream.Collectors;
 @Service
 public class EmployeeService {
 
-    private EmployeeDao employeeDao;
+    private final EmployeeDao employeeDao;
+
+    private final Logger LOGGER = LoggerFactory.getLogger(EmployeeService.class);
 
     @Autowired
     public EmployeeService(EmployeeDao employeeDao) {
@@ -27,9 +31,12 @@ public class EmployeeService {
                 .collect(Collectors.toList());
     }
 
-    public EmployeeResponse getByMpid(String mpid) {
-        return employeeDao.findByMpid(mpid)
+    public EmployeeResponse getByPid(String pid) {
+        return employeeDao.findByMpid(pid)
                 .map(EmployeeResponse::from)
-                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Employee not found for mpid " + mpid));
+                .orElseThrow(() -> {
+                    LOGGER.error("Employee not found. pid: {}",pid);
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found for pid " + pid);
+                });
     }
 }
