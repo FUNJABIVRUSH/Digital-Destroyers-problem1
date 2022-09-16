@@ -2,6 +2,8 @@ package com.destroyers.seatallocation.service;
 
 import com.destroyers.seatallocation.dao.EmployeeDao;
 import com.destroyers.seatallocation.model.employee.EmployeeResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,8 @@ import java.util.stream.Collectors;
 public class EmployeeService {
 
     private final EmployeeDao employeeDao;
+
+    private final Logger LOGGER = LoggerFactory.getLogger(EmployeeService.class);
 
     @Autowired
     public EmployeeService(EmployeeDao employeeDao) {
@@ -30,6 +34,9 @@ public class EmployeeService {
     public EmployeeResponse getByPid(String pid) {
         return employeeDao.findByMpid(pid)
                 .map(EmployeeResponse::from)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found for pid " + pid));
+                .orElseThrow(() -> {
+                    LOGGER.error("Employee not found. pid: {}",pid);
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found for pid " + pid);
+                });
     }
 }
