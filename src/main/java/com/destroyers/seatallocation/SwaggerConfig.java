@@ -30,7 +30,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfo(
                 "Space Allocation Tool",
-                "Apis of Spring Allocation Tool",
+                "Apis of Space Allocation Tool",
                 "0.1",
                 "",
                 new Contact("Digital Destroyer", "", ""),
