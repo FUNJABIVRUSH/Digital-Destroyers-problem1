@@ -14,20 +14,20 @@ import java.util.List;
 @RequestMapping("/employee")
 public class EmployeeController {
 
-    private EmployeeService employeeService;
+    private final EmployeeService employeeService;
 
     @Autowired
     public EmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
 
-    @GetMapping()
+    @GetMapping
     public List<EmployeeResponse> getEmployees(){
         return employeeService.getAll();
     }
 
-    @GetMapping("/{mpid}")
-    public EmployeeResponse getEmployeeByMpid(@PathVariable("mpid") String mpid){
-        return employeeService.getByMpid(mpid);
+    @GetMapping("/{pid}")
+    public EmployeeResponse getEmployeeByPid(@PathVariable("pid") String pid){
+        return employeeService.getByPid(pid);
     }
 }
