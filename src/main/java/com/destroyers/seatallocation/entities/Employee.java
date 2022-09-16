@@ -22,6 +22,7 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String mpid;
     private String name;
     @Enumerated(EnumType.STRING)
     private EmployeeRole role;

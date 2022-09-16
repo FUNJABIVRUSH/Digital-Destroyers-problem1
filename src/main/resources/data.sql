@@ -1,1 +1,1 @@
-INSERT INTO employees (id, name, role) VALUES (1, 'User-1', 'ADMIN');
+INSERT INTO employees (id, mpid, name, role) VALUES (1, "M12345", 'User-1', 'ADMIN');

@@ -30,13 +30,13 @@ class EmployeeServiceTest {
 
         @Test
         void shouldReturnAllEmployees() {
-            Employee employee = new Employee(1L, "User-1", ADMIN);
+            Employee employee = new Employee(1L, "M12345", "User-1", ADMIN);
             when(employeeDao.findAll()).thenReturn(List.of(employee));
 
             List<EmployeeResponse> employees = employeeService.getAll();
 
             assertThat(employees).hasSize(1);
-            assertThat(employees).contains(new EmployeeResponse(1L, "User-1", ADMIN));
+            assertThat(employees).contains(new EmployeeResponse(1L, "M12345", "User-1", ADMIN));
         }
     }
 }
