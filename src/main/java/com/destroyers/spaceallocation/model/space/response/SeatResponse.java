@@ -12,7 +12,7 @@ import lombok.ToString;
 public class SeatResponse {
 
     private Long seatId;
-    private String seatName;
+    private String seatNumber;
     private Boolean isReserved;
     private String type;
 }
