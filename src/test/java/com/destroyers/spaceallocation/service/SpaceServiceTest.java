@@ -128,23 +128,32 @@ class SpaceServiceTest {
 
         @Test
         void shouldDeleteSpaceByOECode() {
-            when(oeCodeDao.findById(any())).thenReturn(Optional.of(new OECode(1L,"MBLD",500,null,null)));
+            OECode oeCode = new OECode(1L,"MBLD",500,null,null);
+            when(oeCodeDao.findById(any())).thenReturn(Optional.of(oeCode));
+            when(employeeDao.findByMpid("M123")).thenReturn(Optional.of(new Employee(1L,null,null,null,null,oeCode)));
 
-            spaceService.deleteSpace(1L, Collections.emptyList());
+            spaceService.deleteSpace(1L, Collections.emptyList(),"M123");
 
             verify(spaceDao).deleteByAssignedOeCodeId(any());
         }
 
         @Test
         void shouldNotCallDBIfOECodeIsNull() {
-            spaceService.deleteSpace(null, Collections.emptyList());
+            spaceService.deleteSpace(null, Collections.emptyList(),"M123");
             verify(spaceDao,times(0)).deleteByAssignedOeCodeId(any());
         }
 
         @Test
         void shouldDeleteSpaceBySpaceIds() {
-            spaceService.deleteSpace(null, List.of(1L,2L));
-            verify(spaceDao).deleteAllById(List.of(1L,2L));
+            OECode oeCode = new OECode(1L,"MBLD",500,null,null);
+            Employee employee = new Employee(1L,null,null,null,null,oeCode);
+            when(employeeDao.findByMpid("M123")).thenReturn(Optional.of(employee));
+            Space space = new Space(1L,null,employee,oeCode,null,null);
+            when(spaceDao.findAllById(any())).thenReturn(List.of(space));
+
+            spaceService.deleteSpace(null, List.of(1L),"M123");
+
+            verify(spaceDao).delete(space);
             verify(oeCodeDao,times(0)).findById(any());
         }
     }

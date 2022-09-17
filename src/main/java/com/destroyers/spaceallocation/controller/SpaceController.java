@@ -33,7 +33,9 @@ public class SpaceController {
     }
 
     @DeleteMapping
-    public void deleteSpace(@RequestParam(required = false) Long oeCodeId,@RequestParam(required = false) List<Long> spaceIds){
-         spaceService.deleteSpace(oeCodeId,spaceIds);
+    public void deleteSpace(@RequestParam(required = false) Long oeCodeId,
+                            @RequestParam(required = false) List<Long> spaceIds,
+                            @RequestParam(required = true) String pid){
+         spaceService.deleteSpace(oeCodeId,spaceIds,pid);
     }
 }

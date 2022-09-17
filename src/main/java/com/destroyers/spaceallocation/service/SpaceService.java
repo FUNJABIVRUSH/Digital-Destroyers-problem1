@@ -97,16 +97,27 @@ public class SpaceService {
     }
 
     @Transactional
-    public void deleteSpace(Long oeCode, List<Long> spaceIds) {
+    public void deleteSpace(Long oeCode, List<Long> spaceIds, String pid) {
         try {
-            if (Objects.nonNull(oeCode)) {
-                oeCodeDao.findById(oeCode)
-                        .ifPresent(oeCodeEntity -> spaceDao.deleteByAssignedOeCodeId(oeCodeEntity));
-                return;
-            }
-            if (Objects.nonNull(spaceIds)) {
-                spaceDao.deleteAllById(spaceIds);
-            }
+            employeeDao.findByMpid(pid)
+                    .ifPresent(employee -> {
+                        if (Objects.nonNull(oeCode)) {
+                            oeCodeDao.findById(oeCode)
+                                    .ifPresent(oeCodeEntity -> {
+                                        if (employee.getOeCode().getId().equals(oeCode)) {
+                                            spaceDao.deleteByAssignedOeCodeId(oeCodeEntity);
+                                        }
+                                    });
+                        }
+                        if (Objects.nonNull(spaceIds)) {
+                            spaceDao.findAllById(spaceIds)
+                                    .stream()
+                                    .filter(space -> space.getAssignedOeCodeId().equals(employee.getOeCode()))
+                                    .forEach(space -> spaceDao.delete(space));
+                        }
+
+                    });
+
         } catch (EmptyResultDataAccessException exception) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request id(s) not found");
         }
