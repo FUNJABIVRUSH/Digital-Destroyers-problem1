@@ -13,5 +13,6 @@ import java.util.List;
 @Data
 public class AllocateSpaceRequest {
 
+    private Long oeCodeId;
     private List<FloorRequest> floorRequests;
 }

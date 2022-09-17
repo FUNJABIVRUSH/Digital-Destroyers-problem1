@@ -1,13 +1,7 @@
 package com.destroyers.spaceallocation.service;
 
-import com.destroyers.spaceallocation.dao.EmployeeDao;
-import com.destroyers.spaceallocation.dao.SeatDao;
-import com.destroyers.spaceallocation.dao.SeatRangeDao;
-import com.destroyers.spaceallocation.dao.SpaceDao;
-import com.destroyers.spaceallocation.entities.Employee;
-import com.destroyers.spaceallocation.entities.Seat;
-import com.destroyers.spaceallocation.entities.SeatRange;
-import com.destroyers.spaceallocation.entities.Space;
+import com.destroyers.spaceallocation.dao.*;
+import com.destroyers.spaceallocation.entities.*;
 import com.destroyers.spaceallocation.model.space.AllocateSpaceRequest;
 import com.destroyers.spaceallocation.model.space.FloorRequest;
 import org.junit.jupiter.api.Nested;
@@ -43,6 +37,9 @@ class SpaceServiceTest {
     @Mock
     private SeatRangeDao seatRangeDao;
 
+    @Mock
+    private OECodeDao oeCodeDao;
+
     @Nested
     class AllocateTest {
 
@@ -52,15 +49,17 @@ class SpaceServiceTest {
             Employee employee = mock(Employee.class);
             Seat startSeat = mock(Seat.class);
             Seat endSeat = mock(Seat.class);
+            OECode oeCode = mock(OECode.class);
             SeatRange seatRange = new SeatRange(null, startSeat, endSeat, employee);
 
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
             when(seatDao.findAllById(List.of(1L, 10L))).thenReturn(List.of(startSeat, endSeat));
             when(seatRangeDao.save(seatRange)).thenReturn(seatRange);
-            when(spaceDao.saveAll(any())).thenReturn(List.of(new Space(2L, seatRange)));
+            when(oeCodeDao.findById(1L)).thenReturn(Optional.of(oeCode));
+            when(spaceDao.saveAll(any())).thenReturn(List.of(new Space(2L, seatRange, oeCode)));
 
             FloorRequest floorRequest = new FloorRequest(1L, 1L, 1L, 10L);
-            var allocateSpaceRequest = new AllocateSpaceRequest(List.of(floorRequest));
+            var allocateSpaceRequest = new AllocateSpaceRequest(1L, List.of(floorRequest));
 
             List<Long> spaceIds = spaceService.allocate(pid, allocateSpaceRequest);
 
