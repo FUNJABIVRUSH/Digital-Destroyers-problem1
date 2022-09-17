@@ -38,15 +38,12 @@ public class SpaceService {
     public List<SpaceResponse> getSpaceAllocatedTo(String pid) {
         Employee employee = getEmployee(pid);
         OECode oeCode = employee.getOeCode();
-        return seatRangeDao.findAllByOeCodeId(oeCode.getId()).stream()
-                .map(seatRange -> getSpaceResponse(spaceDao, seatRange))
+        return spaceDao.findAllByAllocatedOeCodeId(oeCode.getId())
+                .stream()
+                .map(SpaceResponse::from)
                 .collect(Collectors.toList());
     }
 
-    private SpaceResponse getSpaceResponse(SpaceDao spaceDao, SeatRange seatRange) {
-        Space space = spaceDao.findByRangeId(seatRange.getId());
-        return SpaceResponse.from(seatRange, space);
-    }
 
     public List<Long> allocate(String pid, AllocateSpaceRequest allocateSpaceRequest) {
         Employee employee = getEmployee(pid);
@@ -66,9 +63,9 @@ public class SpaceService {
                 .map(floorRequest -> {
                     List<Seat> seats = seatDao.findAllById(List.of(floorRequest.getStartSeatId(), floorRequest.getEndSeatId()));
                     OECode oeCode = getOeCode(oeCodeId);
-                    SeatRange seatRange = new SeatRange(null, seats.get(0), seats.get(1), employee, oeCode);
+                    SeatRange seatRange = new SeatRange(null, seats.get(0), seats.get(1));
                     SeatRange savedSeatRange = seatRangeDao.save(seatRange);
-                    return new Space(null, savedSeatRange, allocateSpaceRequest.getStartDate(),allocateSpaceRequest.getEndDate());
+                    return new Space(null, savedSeatRange, employee, oeCode, allocateSpaceRequest.getStartDate(),allocateSpaceRequest.getEndDate());
                 })
                 .collect(Collectors.toList());
     }
@@ -91,8 +88,8 @@ public class SpaceService {
 
     public List<SpaceResponse> getSpaceReservedBy(String pid) {
         Employee employee = getEmployee(pid);
-        return seatRangeDao.findAllByEmployeeId(employee.getId()).stream()
-                .map(seatRange -> getSpaceResponse(spaceDao, seatRange))
+        return spaceDao.findAllByCreatedByEmployeeId(employee.getId()).stream()
+                .map(SpaceResponse::from)
                 .collect(Collectors.toList());
     }
 

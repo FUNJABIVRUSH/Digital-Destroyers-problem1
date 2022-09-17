@@ -53,13 +53,13 @@ class SpaceServiceTest {
             Seat startSeat = mock(Seat.class);
             Seat endSeat = mock(Seat.class);
             OECode oeCode = mock(OECode.class);
-            SeatRange seatRange = new SeatRange(null, startSeat, endSeat, employee, oeCode);
+            SeatRange seatRange = new SeatRange(null, startSeat, endSeat);
 
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
             when(seatDao.findAllById(List.of(1L, 10L))).thenReturn(List.of(startSeat, endSeat));
             when(seatRangeDao.save(seatRange)).thenReturn(seatRange);
             when(oeCodeDao.findById(1L)).thenReturn(Optional.of(oeCode));
-            when(spaceDao.saveAll(any())).thenReturn(List.of(new Space(2L, seatRange, LocalDate.now(),LocalDate.now().plusDays(5L))));
+            when(spaceDao.saveAll(any())).thenReturn(List.of(new Space(2L, seatRange, employee, oeCode, LocalDate.now(),LocalDate.now().plusDays(5L))));
 
             FloorRequest floorRequest = new FloorRequest(1L, 10L);
             var allocateSpaceRequest = new AllocateSpaceRequest(1L, LocalDate.now(),LocalDate.now().plusDays(5L),List.of(floorRequest));
@@ -83,12 +83,11 @@ class SpaceServiceTest {
             Seat startSeat = new Seat(1L, "1", zone, "WINDOW", false);
             Seat endSeat = new Seat(10L, "10", zone, "NON_WINDOW", false);
 
-            SeatRange seatRange = new SeatRange(1L, startSeat, endSeat, employee, oeCode);
+            SeatRange seatRange = new SeatRange(1L, startSeat, endSeat);
 
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
             when(employee.getOeCode()).thenReturn(oeCode);
-            when(seatRangeDao.findAllByOeCodeId(1L)).thenReturn(List.of(seatRange));
-            when(spaceDao.findByRangeId(1L)).thenReturn(new Space(1L,seatRange, LocalDate.now(),LocalDate.now().plusDays(5L)));
+            when(spaceDao.findAllByAllocatedOeCodeId(1L)).thenReturn(List.of(new Space(1L,seatRange, employee, oeCode, LocalDate.now(),LocalDate.now().plusDays(5L))));
 
             List<SpaceResponse> spaceResponses = spaceService.getSpaceAllocatedTo(pid);
 
@@ -111,11 +110,10 @@ class SpaceServiceTest {
             Seat startSeat = new Seat(1L, "1", zone, "WINDOW", false);
             Seat endSeat = new Seat(10L, "10", zone, "NON_WINDOW", false);
 
-            SeatRange seatRange = new SeatRange(1L, startSeat, endSeat, employee, oeCode);
+            SeatRange seatRange = new SeatRange(1L, startSeat, endSeat);
 
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
-            when(seatRangeDao.findAllByEmployeeId(1L)).thenReturn(List.of(seatRange));
-            when(spaceDao.findByRangeId(1L)).thenReturn(new Space(1L,seatRange, LocalDate.now(),LocalDate.now().plusDays(5L)));
+            when(spaceDao.findAllByCreatedByEmployeeId(1L)).thenReturn(List.of(new Space(1L,seatRange, employee, oeCode, LocalDate.now(),LocalDate.now().plusDays(5L))));
 
             List<SpaceResponse> spaceResponses = spaceService.getSpaceReservedBy(pid);
 

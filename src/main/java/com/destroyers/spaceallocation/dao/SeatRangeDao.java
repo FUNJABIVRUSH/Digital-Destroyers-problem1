@@ -8,6 +8,4 @@ import java.util.List;
 
 @Repository
 public interface SeatRangeDao extends JpaRepository<SeatRange, Long> {
-    List<SeatRange> findAllByOeCodeId(long l);
-    List<SeatRange> findAllByEmployeeId(long l);
 }

@@ -23,9 +23,9 @@ public class SpaceResponse {
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate endDate;
 
-    public static SpaceResponse from(SeatRange seatRange, Space space) {
-        Seat startSeat = seatRange.getStartSeat();
-        Seat endSeat = seatRange.getEndSeat();
+    public static SpaceResponse from(Space space) {
+        Seat startSeat = space.getRange().getStartSeat();
+        Seat endSeat = space.getRange().getEndSeat();
         Zone zone = startSeat.getZone();
         Floor floor = zone.getFloor();
         return new SpaceResponse(floor.getId(), zone.getId(), startSeat.getId(), endSeat.getId(),space.getStartDate(),space.getEndDate());

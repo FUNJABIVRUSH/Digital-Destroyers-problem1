@@ -23,10 +23,5 @@ public class SeatRange {
     @OneToOne
     @JoinColumn(name = "end_seat_id", referencedColumnName = "id")
     private Seat endSeat;
-    @OneToOne
-    @JoinColumn(name = "employee_id", referencedColumnName = "id")
-    private Employee employee;
-    @OneToOne
-    @JoinColumn(name = "oe_code_id", referencedColumnName = "id")
-    private OECode oeCode;
+
 }
