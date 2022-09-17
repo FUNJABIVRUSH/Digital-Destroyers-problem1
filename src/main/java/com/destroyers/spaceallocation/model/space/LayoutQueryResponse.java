@@ -6,11 +6,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import javax.persistence.*;
+
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class SpaceQueryResponse {
+public class LayoutQueryResponse {
     private String buildingName;
     private Long floorId;
     private String floorName;
@@ -21,3 +23,4 @@ public class SpaceQueryResponse {
     private String seatType;
     private Boolean isReserved;
 }
+
