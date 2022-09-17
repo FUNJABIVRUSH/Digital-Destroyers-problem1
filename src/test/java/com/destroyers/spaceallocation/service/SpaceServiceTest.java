@@ -2,6 +2,7 @@ package com.destroyers.spaceallocation.service;
 
 import com.destroyers.spaceallocation.dao.*;
 import com.destroyers.spaceallocation.entities.*;
+import com.destroyers.spaceallocation.model.employee.EmployeeRole;
 import com.destroyers.spaceallocation.model.space.AllocateSpaceRequest;
 import com.destroyers.spaceallocation.model.space.FloorRequest;
 import com.destroyers.spaceallocation.model.space.response.SpaceResponse;
@@ -42,7 +43,7 @@ class SpaceServiceTest {
     private OECodeDao oeCodeDao;
 
     @Nested
-    class AllocateTest {
+    class AllocateNewSpaceTest {
 
         @Test
         void shouldAllocateSpace() {
@@ -69,7 +70,7 @@ class SpaceServiceTest {
     }
 
     @Nested
-    class GetSpaceTest {
+    class AllocatedSpaceTest {
 
         @Test
         void shouldReturnSpaceAssignedToEmployee() {
@@ -93,5 +94,29 @@ class SpaceServiceTest {
         }
     }
 
+    @Nested
+    class ReservedSpaceTest {
+
+        @Test
+        void shouldReturnSpaceReservedByEmployee() {
+            String pid = "M12345";
+
+            OECode oeCode = new OECode(1L, "MBLD1", 100, null, "LOW");
+            Employee employee = new Employee(1L,pid,"XYZ", EmployeeRole.EMPLOYEE,null,oeCode);
+            Floor floor = new Floor(1L, "1", new Building(1L, "EON2") );
+            Zone zone = new Zone(1L, "A", floor);
+            Seat startSeat = new Seat(1L, "1", zone, "WINDOW", false);
+            Seat endSeat = new Seat(10L, "10", zone, "NON_WINDOW", false);
+
+            SeatRange seatRange = new SeatRange(1L, startSeat, endSeat, employee, oeCode);
+
+            when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
+            when(seatRangeDao.findAllByEmployeeId(1L)).thenReturn(List.of(seatRange));
+
+            List<SpaceResponse> spaceResponses = spaceService.getSpaceReservedBy(pid);
+
+            assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse(1L, 1L, 1L, 1L, 10L)));
+        }
+    }
 
 }
