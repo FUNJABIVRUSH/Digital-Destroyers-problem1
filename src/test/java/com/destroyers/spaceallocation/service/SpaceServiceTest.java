@@ -83,9 +83,7 @@ class SpaceServiceTest {
             Zone zone = new Zone(1L, "A", floor);
             Seat startSeat = new Seat(1L, "1", zone, "WINDOW");
             Seat endSeat = new Seat(10L, "10", zone, "NON_WINDOW");
-
             SeatRange seatRange = new SeatRange(1L, startSeat, endSeat);
-
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
             when(employee.getOeCode()).thenReturn(oeCode);
             when(spaceDao.findAllByAssignedOeCodeId(any())).thenReturn(List.of(new Space(1L, seatRange, employee, oeCode, LocalDate.now(), LocalDate.now().plusDays(5L))));
@@ -103,16 +101,13 @@ class SpaceServiceTest {
         @Test
         void shouldReturnSpaceReservedByEmployee() {
             String pid = "M12345";
-
             OECode oeCode = new OECode(1L, "MBLD1", 100, null, "LOW", null);
             Employee employee = new Employee(1L, pid, "XYZ", EmployeeRole.EMPLOYEE, null, oeCode);
             Floor floor = new Floor(1L, "1", new Building(1L, "EON2"));
             Zone zone = new Zone(1L, "A", floor);
             Seat startSeat = new Seat(1L, "1", zone, "WINDOW");
             Seat endSeat = new Seat(10L, "10", zone, "NON_WINDOW");
-
             SeatRange seatRange = new SeatRange(1L, startSeat, endSeat);
-
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
             when(spaceDao.findAllByCreatedEmployeeId(any())).thenReturn(List.of(new Space(1L, seatRange, employee, oeCode, LocalDate.now(), LocalDate.now().plusDays(5L))));
 
