@@ -25,5 +25,8 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private EmployeeRole role;
 
+    @OneToOne
+    @JoinColumn(name = "department_id", referencedColumnName = "id")
+    private Department department;
 
 }
