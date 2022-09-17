@@ -18,11 +18,12 @@ public class Seat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+    private String number;
     @ManyToOne
     @JoinColumn(name = "zone_id", referencedColumnName = "id")
     private Zone zone;
 
     private String type;
+    @Column(name = "is_reserved")
     private Boolean isReserved;
 }

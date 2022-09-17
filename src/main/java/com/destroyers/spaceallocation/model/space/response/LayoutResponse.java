@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class SpaceResponse {
+public class LayoutResponse {
 
     private String buildingName;
     private List<FloorResponse> floors;
