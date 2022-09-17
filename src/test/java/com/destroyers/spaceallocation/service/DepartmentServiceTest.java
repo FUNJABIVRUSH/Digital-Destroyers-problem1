@@ -1,10 +1,7 @@
 package com.destroyers.spaceallocation.service;
 
 import com.destroyers.spaceallocation.dao.OECodeDao;
-import com.destroyers.spaceallocation.entities.Department;
-import com.destroyers.spaceallocation.entities.DepartmentAdmin;
-import com.destroyers.spaceallocation.entities.Employee;
-import com.destroyers.spaceallocation.entities.OECode;
+import com.destroyers.spaceallocation.entities.*;
 import com.destroyers.spaceallocation.model.department.DepartmentResponse;
 import com.destroyers.spaceallocation.model.employee.EmployeeResponse;
 import org.junit.jupiter.api.Nested;
@@ -42,10 +39,11 @@ class DepartmentServiceTest {
         @Test
         void shouldReturnAllDepartments() {
             String pid = "M12345";
+            Building building = new Building(1L, "EON2");
             OECode highLevelOECode = new OECode(1L, "MBLD1", 110, null, "HIGH");
             OECode oeCode1 = new OECode(2L, "MBLD11", 100, null, "MID");
             OECode oeCode2 = new OECode(3L, "MBLD12", 10, null, "MID");
-            Department department = new Department(1L, "Private Banking");
+            Department department = new Department(1L, "Private Banking",building);
             Employee employee = new Employee(1L, pid, "User-1", ADMIN, department);
 
             DepartmentAdmin departmentAdmin = new DepartmentAdmin(1L, employee, department);
@@ -58,7 +56,7 @@ class DepartmentServiceTest {
 
             assertThat(departments).hasSize(1);
             assertThat(departments).contains(new DepartmentResponse(
-                    department.getId(), "Private Banking", highLevelOECode.getId(), highLevelOECode.getName(), 110
+                    building.getId(), building.getName(), department.getId(), "Private Banking", highLevelOECode.getId(), highLevelOECode.getName(), 110
             ));
         }
     }

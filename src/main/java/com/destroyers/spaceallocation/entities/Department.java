@@ -18,4 +18,7 @@ public class Department {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @OneToOne
+    @JoinColumn(name = "building_id", referencedColumnName = "id")
+    private Building building;
 }
