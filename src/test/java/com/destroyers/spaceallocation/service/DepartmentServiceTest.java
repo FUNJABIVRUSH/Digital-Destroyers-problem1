@@ -35,18 +35,19 @@ class DepartmentServiceTest {
 
         @Test
         void shouldReturnAllDepartments() {
-            OECode oeCode1 = new OECode(1L, "MBLD12", 100, null);
-            OECode oeCode2 = new OECode(2L, "MBLD13", 10, null);
+            OECode highLevelOECode = new OECode(1L, "MBLD1", 110, null, "HIGH");
+            OECode oeCode1 = new OECode(2L, "MBLD11", 100, null, "MID");
+            OECode oeCode2 = new OECode(3L, "MBLD12", 10, null, "MID");
             Department department = new Department(1L, "Private Banking");
 
             when(departmentDao.findAll()).thenReturn(List.of(department));
-            when(oeCodeDao.findByDepartmentId(1L)).thenReturn(List.of(oeCode1, oeCode2));
+            when(oeCodeDao.findByDepartmentId(1L)).thenReturn(List.of(oeCode1, oeCode2, highLevelOECode));
 
             List<DepartmentResponse> departments = departmentService.getAll();
 
             assertThat(departments).hasSize(1);
             assertThat(departments).contains(new DepartmentResponse(
-                    "Private Banking", 110
+                    "Private Banking", highLevelOECode.getName(), 110
             ));
         }
     }

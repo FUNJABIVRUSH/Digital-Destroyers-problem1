@@ -27,4 +27,5 @@ public class OECode {
     @ManyToOne()
     @JoinColumn(name = "department_id", referencedColumnName = "id")
     private Department department;
+    private String type;
 }

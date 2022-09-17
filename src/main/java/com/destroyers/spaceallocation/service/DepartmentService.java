@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,9 +29,9 @@ public class DepartmentService {
     }
 
     private DepartmentResponse getDepartmentResponse(Department department) {
-        Integer totalEmployees = oeCodeDao.findByDepartmentId(department.getId()).stream()
-                .map(OECode::getTotalEmployees)
-                .reduce(0, Integer::sum);
-        return DepartmentResponse.from(department, totalEmployees);
+        Optional<OECode> highLevelOECode = oeCodeDao.findByDepartmentId(department.getId()).stream()
+                .filter(oeCode -> "HIGH".equalsIgnoreCase(oeCode.getType()))
+                .findFirst();
+        return DepartmentResponse.from(department, highLevelOECode);
     }
 }
