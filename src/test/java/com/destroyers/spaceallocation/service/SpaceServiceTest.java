@@ -78,7 +78,7 @@ class SpaceServiceTest {
         void shouldReturnSpaceAssignedToEmployee() {
             String pid = "M12345";
             Employee employee = mock(Employee.class);
-            OECode oeCode = new OECode(1L, "MBLD1", 100, null, "LOW");
+            OECode oeCode = new OECode(1L, "MBLD1", 100, null, "LOW", null);
             Floor floor = new Floor(1L, "1", new Building(1L, "EON2"));
             Zone zone = new Zone(1L, "A", floor);
             Seat startSeat = new Seat(1L, "1", zone, "WINDOW");
@@ -104,7 +104,7 @@ class SpaceServiceTest {
         void shouldReturnSpaceReservedByEmployee() {
             String pid = "M12345";
 
-            OECode oeCode = new OECode(1L, "MBLD1", 100, null, "LOW");
+            OECode oeCode = new OECode(1L, "MBLD1", 100, null, "LOW", null);
             Employee employee = new Employee(1L,pid,"XYZ", EmployeeRole.EMPLOYEE,null,oeCode);
             Floor floor = new Floor(1L, "1", new Building(1L, "EON2") );
             Zone zone = new Zone(1L, "A", floor);

@@ -40,15 +40,15 @@ class DepartmentServiceTest {
         void shouldReturnAllDepartments() {
             String pid = "M12345";
             Building building = new Building(1L, "EON2");
-            OECode highLevelOECode = new OECode(1L, "MBLD1", 110, null, "HIGH");
-            OECode oeCode1 = new OECode(2L, "MBLD11", 100, null, "MID");
-            OECode oeCode2 = new OECode(3L, "MBLD12", 10, null, "MID");
+            OECode highLevelOECode = new OECode(1L, "MBLD1", 110, null, "HIGH", null);
+            OECode oeCode1 = new OECode(2L, "MBLD11", 100, null, "MID", null);
+            OECode oeCode2 = new OECode(3L, "MBLD12", 10, null, "MID", null);
             Department department = new Department(1L, "Private Banking",building);
             Employee employee = new Employee(1L, pid, "User-1", ADMIN, department, oeCode1);
 
             DepartmentAdmin departmentAdmin = new DepartmentAdmin(1L, employee, department);
 
-            when(employeeService.getByPid(pid)).thenReturn(EmployeeResponse.from(employee));
+            when(employeeService.getByPid(pid)).thenReturn(EmployeeResponse.from(employee, List.of()));
             when(oeCodeDao.findByDepartmentId(1L)).thenReturn(List.of(oeCode1, oeCode2, highLevelOECode));
             when(departmentAdminService.getByEmployeeId(1L)).thenReturn(List.of(departmentAdmin));
 
