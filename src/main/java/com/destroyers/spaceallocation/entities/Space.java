@@ -25,11 +25,11 @@ public class Space {
 
     @OneToOne
     @JoinColumn(name = "created_employee_id", referencedColumnName = "id")
-    private Employee createdBy;
+    private Employee createdEmployeeId;
 
     @OneToOne
-    @JoinColumn(name = "allocated_oe_code_id", referencedColumnName = "id")
-    private OECode allocatedTo;
+    @JoinColumn(name = "assigned_oe_code_id", referencedColumnName = "id")
+    private OECode assignedOeCodeId;
 
     @Column(name = "start_date", columnDefinition = "DATE")
     private LocalDate startDate;

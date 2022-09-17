@@ -8,7 +8,6 @@ import java.util.List;
 
 @Repository
 public interface SpaceDao extends JpaRepository<Space, Long> {
-    Space findByRangeId(long l);
-    List<Space> findAllByAllocatedOeCodeId(long l);
-    List<Space> findAllByCreatedByEmployeeId(long l);
+    List<Space> findAllByAssignedOeCodeId(long assignedOeCodeId);
+    List<Space> findAllByCreatedEmployeeId(long createdEmployeeId);
 }
