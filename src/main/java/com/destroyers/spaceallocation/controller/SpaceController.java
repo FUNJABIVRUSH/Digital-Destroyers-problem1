@@ -1,7 +1,7 @@
 package com.destroyers.spaceallocation.controller;
 
 import com.destroyers.spaceallocation.model.space.AllocateSpaceRequest;
-import com.destroyers.spaceallocation.model.space.SpaceResponse;
+import com.destroyers.spaceallocation.model.space.response.SpaceResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,9 +13,10 @@ import java.net.URISyntaxException;
 @CrossOrigin(origins = "*")
 public class SpaceController {
 
-    @GetMapping("{spaceId}")
-    public SpaceResponse getSpaceInfo(@PathVariable(required = false) String spaceId
-            , @RequestParam("pid") String pid) {
+    @GetMapping
+    public SpaceResponse getSpaceInfo(@RequestParam(required = false) String spaceId,
+                                      @RequestParam String buildingId,
+                                      @RequestParam String pid) {
         return null;
     }
 
