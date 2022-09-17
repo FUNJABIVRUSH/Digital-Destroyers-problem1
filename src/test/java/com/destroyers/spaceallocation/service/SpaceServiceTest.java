@@ -50,13 +50,13 @@ class SpaceServiceTest {
             Seat startSeat = mock(Seat.class);
             Seat endSeat = mock(Seat.class);
             OECode oeCode = mock(OECode.class);
-            SeatRange seatRange = new SeatRange(null, startSeat, endSeat, employee);
+            SeatRange seatRange = new SeatRange(null, startSeat, endSeat, employee, oeCode);
 
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
             when(seatDao.findAllById(List.of(1L, 10L))).thenReturn(List.of(startSeat, endSeat));
             when(seatRangeDao.save(seatRange)).thenReturn(seatRange);
             when(oeCodeDao.findById(1L)).thenReturn(Optional.of(oeCode));
-            when(spaceDao.saveAll(any())).thenReturn(List.of(new Space(2L, seatRange, oeCode)));
+            when(spaceDao.saveAll(any())).thenReturn(List.of(new Space(2L, seatRange)));
 
             FloorRequest floorRequest = new FloorRequest(1L, 1L, 1L, 10L);
             var allocateSpaceRequest = new AllocateSpaceRequest(1L, List.of(floorRequest));

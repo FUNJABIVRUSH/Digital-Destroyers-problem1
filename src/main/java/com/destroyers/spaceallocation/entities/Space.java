@@ -37,8 +37,4 @@ public class Space {
     @OneToOne
     @JoinColumn(name = "range_id", referencedColumnName = "id")
     private SeatRange range;
-
-    @OneToOne
-    @JoinColumn(name = "oe_code_id", referencedColumnName = "id")
-    private OECode oeCode;
 }

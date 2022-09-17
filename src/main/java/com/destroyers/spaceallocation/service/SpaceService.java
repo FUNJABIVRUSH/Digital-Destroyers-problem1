@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,10 +55,10 @@ public class SpaceService {
         return floorRequests.stream()
                 .map(floorRequest -> {
                     List<Seat> seats = seatDao.findAllById(List.of(floorRequest.getStartSeatId(), floorRequest.getEndSeatId()));
-                    SeatRange seatRange = new SeatRange(null, seats.get(0), seats.get(1), employee);
-                    SeatRange savedSeatRange = seatRangeDao.save(seatRange);
                     OECode oeCode = getOeCode(oeCodeId);
-                    return new Space(null, savedSeatRange, oeCode);
+                    SeatRange seatRange = new SeatRange(null, seats.get(0), seats.get(1), employee, oeCode);
+                    SeatRange savedSeatRange = seatRangeDao.save(seatRange);
+                    return new Space(null, savedSeatRange);
                 })
                 .collect(Collectors.toList());
     }
