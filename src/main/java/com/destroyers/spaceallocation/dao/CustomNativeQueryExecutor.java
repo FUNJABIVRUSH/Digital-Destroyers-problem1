@@ -4,10 +4,7 @@ import com.destroyers.spaceallocation.model.space.LayoutQueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.ColumnResult;
-import javax.persistence.ConstructorResult;
 import javax.persistence.EntityManager;
-import javax.persistence.SqlResultSetMapping;
 import java.util.List;
 
 @Repository

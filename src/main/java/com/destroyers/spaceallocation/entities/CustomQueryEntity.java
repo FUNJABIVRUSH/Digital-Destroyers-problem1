@@ -2,7 +2,10 @@ package com.destroyers.spaceallocation.entities;
 
 import com.destroyers.spaceallocation.model.space.LayoutQueryResponse;
 
-import javax.persistence.*;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @javax.persistence.SqlResultSetMapping(name = "LayoutQuery", classes = {
         @ConstructorResult(targetClass = LayoutQueryResponse.class,
