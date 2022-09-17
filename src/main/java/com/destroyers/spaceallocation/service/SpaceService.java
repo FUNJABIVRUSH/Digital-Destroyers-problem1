@@ -38,7 +38,7 @@ public class SpaceService {
     public List<SpaceResponse> getSpaceAllocatedTo(String pid) {
         Employee employee = getEmployee(pid);
         OECode oeCode = employee.getOeCode();
-        return spaceDao.findAllByAssignedOeCodeId(oeCode.getId())
+        return spaceDao.findAllByAssignedOeCodeId(oeCode)
                 .stream()
                 .map(SpaceResponse::from)
                 .collect(Collectors.toList());
@@ -88,7 +88,7 @@ public class SpaceService {
 
     public List<SpaceResponse> getSpaceReservedBy(String pid) {
         Employee employee = getEmployee(pid);
-        return spaceDao.findAllByCreatedEmployeeId(employee.getId()).stream()
+        return spaceDao.findAllByCreatedEmployeeId(employee).stream()
                 .map(SpaceResponse::from)
                 .collect(Collectors.toList());
     }
