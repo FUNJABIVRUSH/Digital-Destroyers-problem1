@@ -1,6 +1,7 @@
 package com.destroyers.spaceallocation.controller;
 
 import com.destroyers.spaceallocation.model.space.AllocateSpaceRequest;
+import com.destroyers.spaceallocation.model.space.EditSpaceRequest;
 import com.destroyers.spaceallocation.model.space.response.SpaceResponse;
 import com.destroyers.spaceallocation.service.SpaceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,14 @@ public class SpaceController {
     @DeleteMapping
     public void deleteSpace(@RequestParam(required = false) Long oeCodeId,
                             @RequestParam(required = false) List<Long> spaceIds,
-                            @RequestParam(required = true) String pid){
+                            @RequestParam String pid){
          spaceService.deleteSpace(oeCodeId,spaceIds,pid);
+    }
+
+    @PutMapping("/{spaceId}")
+    public void editSpace(@RequestBody EditSpaceRequest request,
+                            @PathVariable Long spaceId,
+                            @RequestParam String pid){
+        spaceService.editSpace(request,spaceId,pid);
     }
 }

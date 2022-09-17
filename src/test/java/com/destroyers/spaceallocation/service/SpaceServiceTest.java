@@ -4,6 +4,7 @@ import com.destroyers.spaceallocation.dao.*;
 import com.destroyers.spaceallocation.entities.*;
 import com.destroyers.spaceallocation.model.employee.EmployeeRole;
 import com.destroyers.spaceallocation.model.space.AllocateSpaceRequest;
+import com.destroyers.spaceallocation.model.space.EditSpaceRequest;
 import com.destroyers.spaceallocation.model.space.FloorRequest;
 import com.destroyers.spaceallocation.model.space.response.SpaceResponse;
 import org.junit.jupiter.api.Nested;
@@ -14,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -139,6 +139,7 @@ class SpaceServiceTest {
 
         @Test
         void shouldNotCallDBIfOECodeIsNull() {
+            when(employeeDao.findByMpid("M123")).thenReturn(Optional.of(new Employee(1L,null,null,null,null,null)));
             spaceService.deleteSpace(null, Collections.emptyList(),"M123");
             verify(spaceDao, times(0)).deleteByAssignedOeCodeId(any());
         }
@@ -155,6 +156,32 @@ class SpaceServiceTest {
 
             verify(spaceDao).delete(space);
             verify(oeCodeDao, times(0)).findById(any());
+        }
+    }
+
+    @Nested
+    class EditSpaceTest {
+
+        @Test
+        void shouldEditSpaceBasedOnInputRequestAndSpaceId() {
+            OECode oeCode = new OECode(1L,"MBLD",500,null,null,null);
+            Employee employee = new Employee(1L,null,null,null,null,oeCode);
+            Seat startSeat = new Seat(6L,"6",new Zone(1L,"A",new Floor(1L,"",null)),"");
+            Seat endSeat = new Seat(3L,"3",new Zone(2L,"B",new Floor(1L,"",null)),"");
+            Space space = new Space(1L,new SeatRange(1L,startSeat,endSeat),employee,oeCode,null,null);
+
+
+
+            when(spaceDao.findById(any())).thenReturn(Optional.of(space));
+            when(oeCodeDao.findById(any())).thenReturn(Optional.of(oeCode));
+            when(seatDao.findById(6L)).thenReturn(Optional.of(startSeat));
+            when(seatDao.findById(3L)).thenReturn(Optional.of(endSeat));
+            when(employeeDao.findByMpid("M123")).thenReturn(Optional.of(employee));
+            when(spaceDao.saveAndFlush(any())).thenReturn(space);
+
+            spaceService.editSpace(new EditSpaceRequest(2L,3L,6L),1L,"M123");
+
+            verify(spaceDao).saveAndFlush(any());
         }
     }
 }

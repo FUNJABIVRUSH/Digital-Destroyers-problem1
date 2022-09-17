@@ -3,12 +3,12 @@ package com.destroyers.spaceallocation.service;
 import com.destroyers.spaceallocation.dao.*;
 import com.destroyers.spaceallocation.entities.*;
 import com.destroyers.spaceallocation.model.space.AllocateSpaceRequest;
+import com.destroyers.spaceallocation.model.space.EditSpaceRequest;
 import com.destroyers.spaceallocation.model.space.FloorRequest;
 import com.destroyers.spaceallocation.model.space.response.SpaceResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,6 +89,20 @@ public class SpaceService {
         });
     }
 
+    private Space getSpace(Long spaceId) {
+        return spaceDao.findById(spaceId).orElseThrow(() -> {
+            LOGGER.error("Space not found. id: {}", spaceId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Space not found. id: " + spaceId);
+        });
+    }
+
+    private Seat getSeat(Long seatId) {
+        return seatDao.findById(seatId).orElseThrow(() -> {
+            LOGGER.error("Seat not found. id: {}", seatId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Seat not found. id: " + seatId);
+        });
+    }
+
     public List<SpaceResponse> getSpaceReservedBy(String pid) {
         Employee employee = getEmployee(pid);
         return spaceDao.findAllByCreatedEmployeeId(employee).stream()
@@ -98,29 +112,36 @@ public class SpaceService {
 
     @Transactional
     public void deleteSpace(Long oeCode, List<Long> spaceIds, String pid) {
-        try {
-            employeeDao.findByMpid(pid)
-                    .ifPresent(employee -> {
-                        if (Objects.nonNull(oeCode)) {
-                            oeCodeDao.findById(oeCode)
-                                    .ifPresent(oeCodeEntity -> {
-                                        if (employee.getOeCode().getId().equals(oeCode)) {
-                                            spaceDao.deleteByAssignedOeCodeId(oeCodeEntity);
-                                        }
-                                    });
-                        }
-                        if (Objects.nonNull(spaceIds)) {
-                            spaceDao.findAllById(spaceIds)
-                                    .stream()
-                                    .filter(space -> space.getAssignedOeCodeId().equals(employee.getOeCode()))
-                                    .forEach(space -> spaceDao.delete(space));
-                        }
+        Employee employee = getEmployee(pid);
+        if (Objects.nonNull(oeCode)) {
+            OECode oeCodeEntity = getOeCode(oeCode);
+            if (employee.getOeCode().getId().equals(oeCode)) {
+                spaceDao.deleteByAssignedOeCodeId(oeCodeEntity);
+                return;
+            }
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        if (Objects.nonNull(spaceIds)) {
+            spaceDao.findAllById(spaceIds)
+                    .stream()
+                    .filter(space -> employee.getOeCode().equals(space.getAssignedOeCodeId()))
+                    .forEach(space -> spaceDao.delete(space));
+        }
+    }
 
-                    });
-
-        } catch (EmptyResultDataAccessException exception) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request id(s) not found");
+    @Transactional
+    public SpaceResponse editSpace(EditSpaceRequest request, Long spaceId, String pid) {
+        Employee employee = getEmployee(pid);
+        Space space = getSpace(spaceId);
+        if(space.getCreatedEmployeeId().equals(employee)){
+            space.setAssignedOeCodeId(getOeCode(request.getOeCodeId()));
+            final SeatRange range = space.getRange();
+            range.setEndSeat(getSeat(request.getEndSeatId()));
+            range.setStartSeat(getSeat(request.getStartSeatId()));
+            return SpaceResponse.from(spaceDao.saveAndFlush(space));
         }
 
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
     }
 }
+
