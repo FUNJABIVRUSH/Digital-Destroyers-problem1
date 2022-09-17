@@ -39,7 +39,7 @@ class EmployeeServiceTest {
             List<EmployeeResponse> employees = employeeService.getAll();
 
             assertThat(employees).hasSize(1);
-            assertThat(employees).contains(new EmployeeResponse( "M12345", "User-1", ADMIN));
+            assertThat(employees).contains(new EmployeeResponse( 1L, "M12345", "User-1", ADMIN));
         }
     }
 
@@ -54,7 +54,7 @@ class EmployeeServiceTest {
 
             EmployeeResponse employeeResponse = employeeService.getByPid(employee.getMpid());
 
-            assertThat(employeeResponse).isEqualTo(new EmployeeResponse("M12345", "User-1", ADMIN));
+            assertThat(employeeResponse).isEqualTo(new EmployeeResponse(1L, "M12345", "User-1", ADMIN));
         }
     }
 
