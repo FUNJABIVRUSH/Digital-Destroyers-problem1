@@ -6,6 +6,7 @@ import com.destroyers.spaceallocation.entities.Department;
 import com.destroyers.spaceallocation.entities.Employee;
 import com.destroyers.spaceallocation.entities.OECode;
 import com.destroyers.spaceallocation.model.employee.EmployeeResponse;
+import com.destroyers.spaceallocation.model.oecode.OECodeResponse;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,7 +44,7 @@ class EmployeeServiceTest {
             List<EmployeeResponse> employees = employeeService.getAll();
 
             assertThat(employees).hasSize(1);
-            assertThat(employees).contains(new EmployeeResponse( 1L, "M12345", "User-1", ADMIN, 1L, "MBLD1" ));
+            assertThat(employees).contains(new EmployeeResponse( 1L, "M12345", "User-1", ADMIN, new OECodeResponse(1L, "MBLD1" ), List.of()));
         }
     }
 
@@ -60,7 +61,7 @@ class EmployeeServiceTest {
 
             EmployeeResponse employeeResponse = employeeService.getByPid(employee.getMpid());
 
-            assertThat(employeeResponse).isEqualTo(new EmployeeResponse(1L, "M12345", "User-1", ADMIN, 1L, "MBLD1"));
+            assertThat(employeeResponse).isEqualTo(new EmployeeResponse(1L, "M12345", "User-1", ADMIN, new OECodeResponse(21L, "MBLD1"), List.of()));
         }
     }
 

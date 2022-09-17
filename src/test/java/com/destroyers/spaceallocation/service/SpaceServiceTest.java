@@ -60,10 +60,10 @@ class SpaceServiceTest {
             when(seatDao.findAllById(List.of(1L, 10L))).thenReturn(List.of(startSeat, endSeat));
             when(seatRangeDao.save(seatRange)).thenReturn(seatRange);
             when(oeCodeDao.findById(1L)).thenReturn(Optional.of(oeCode));
-            when(spaceDao.saveAll(any())).thenReturn(List.of(new Space(2L, seatRange, employee, oeCode, LocalDate.now(),LocalDate.now().plusDays(5L))));
+            when(spaceDao.saveAll(any())).thenReturn(List.of(new Space(2L, seatRange, employee, oeCode, LocalDate.now(), LocalDate.now().plusDays(5L))));
 
             FloorRequest floorRequest = new FloorRequest(1L, 10L);
-            var allocateSpaceRequest = new AllocateSpaceRequest(1L, LocalDate.now(),LocalDate.now().plusDays(5L),List.of(floorRequest));
+            var allocateSpaceRequest = new AllocateSpaceRequest(1L, LocalDate.now(), LocalDate.now().plusDays(5L), List.of(floorRequest));
 
             List<Long> spaceIds = spaceService.allocate(pid, allocateSpaceRequest);
 
@@ -88,12 +88,12 @@ class SpaceServiceTest {
 
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
             when(employee.getOeCode()).thenReturn(oeCode);
-            when(spaceDao.findAllByAssignedOeCodeId(any())).thenReturn(List.of(new Space(1L,seatRange, employee, oeCode, LocalDate.now(),LocalDate.now().plusDays(5L))));
+            when(spaceDao.findAllByAssignedOeCodeId(any())).thenReturn(List.of(new Space(1L, seatRange, employee, oeCode, LocalDate.now(), LocalDate.now().plusDays(5L))));
 
             List<SpaceResponse> spaceResponses = spaceService.getSpaceAllocatedTo(pid);
 
             assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse(1L, 1L, 1L, 10L,
-                    LocalDate.now(),LocalDate.now().plusDays(5L))));
+                    LocalDate.now(), LocalDate.now().plusDays(5L))));
         }
     }
 
@@ -105,8 +105,8 @@ class SpaceServiceTest {
             String pid = "M12345";
 
             OECode oeCode = new OECode(1L, "MBLD1", 100, null, "LOW", null);
-            Employee employee = new Employee(1L,pid,"XYZ", EmployeeRole.EMPLOYEE,null,oeCode);
-            Floor floor = new Floor(1L, "1", new Building(1L, "EON2") );
+            Employee employee = new Employee(1L, pid, "XYZ", EmployeeRole.EMPLOYEE, null, oeCode);
+            Floor floor = new Floor(1L, "1", new Building(1L, "EON2"));
             Zone zone = new Zone(1L, "A", floor);
             Seat startSeat = new Seat(1L, "1", zone, "WINDOW");
             Seat endSeat = new Seat(10L, "10", zone, "NON_WINDOW");
@@ -114,12 +114,12 @@ class SpaceServiceTest {
             SeatRange seatRange = new SeatRange(1L, startSeat, endSeat);
 
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
-            when(spaceDao.findAllByCreatedEmployeeId(any())).thenReturn(List.of(new Space(1L,seatRange, employee, oeCode, LocalDate.now(),LocalDate.now().plusDays(5L))));
+            when(spaceDao.findAllByCreatedEmployeeId(any())).thenReturn(List.of(new Space(1L, seatRange, employee, oeCode, LocalDate.now(), LocalDate.now().plusDays(5L))));
 
             List<SpaceResponse> spaceResponses = spaceService.getSpaceReservedBy(pid);
 
-            assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse( 1L, 1L, 1L, 10L,
-                    LocalDate.now(),LocalDate.now().plusDays(5L))));
+            assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse(1L, 1L, 1L, 10L,
+                    LocalDate.now(), LocalDate.now().plusDays(5L))));
         }
     }
 
@@ -128,7 +128,7 @@ class SpaceServiceTest {
 
         @Test
         void shouldDeleteSpaceByOECode() {
-            when(oeCodeDao.findById(any())).thenReturn(Optional.of(new OECode(1L,"MBLD",500,null,null)));
+            when(oeCodeDao.findById(any())).thenReturn(Optional.of(new OECode(1L, "MBLD", 500, null, null, null)));
 
             spaceService.deleteSpace(1L, Collections.emptyList());
 
@@ -138,14 +138,14 @@ class SpaceServiceTest {
         @Test
         void shouldNotCallDBIfOECodeIsNull() {
             spaceService.deleteSpace(null, Collections.emptyList());
-            verify(spaceDao,times(0)).deleteByAssignedOeCodeId(any());
+            verify(spaceDao, times(0)).deleteByAssignedOeCodeId(any());
         }
 
         @Test
         void shouldDeleteSpaceBySpaceIds() {
-            spaceService.deleteSpace(null, List.of(1L,2L));
-            verify(spaceDao).deleteAllById(List.of(1L,2L));
-            verify(oeCodeDao,times(0)).findById(any());
+            spaceService.deleteSpace(null, List.of(1L, 2L));
+            verify(spaceDao).deleteAllById(List.of(1L, 2L));
+            verify(oeCodeDao, times(0)).findById(any());
         }
     }
 }
