@@ -4,10 +4,8 @@ import com.destroyers.spaceallocation.model.space.AllocateSpaceRequest;
 import com.destroyers.spaceallocation.model.space.response.SpaceResponse;
 import com.destroyers.spaceallocation.service.SpaceService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -32,5 +30,10 @@ public class SpaceController {
     @GetMapping("/reserved")
     public List<SpaceResponse> getSpaceReservedBy(@RequestParam String pid){
         return spaceService.getSpaceReservedBy(pid);
+    }
+
+    @DeleteMapping
+    public void deleteSpace(@RequestParam(required = false) Long oeCodeId,@RequestParam(required = false) List<Long> spaceIds){
+         spaceService.deleteSpace(oeCodeId,spaceIds);
     }
 }

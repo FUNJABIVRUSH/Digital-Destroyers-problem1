@@ -8,11 +8,14 @@ import com.destroyers.spaceallocation.model.space.response.SpaceResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,7 +68,7 @@ public class SpaceService {
                     OECode oeCode = getOeCode(oeCodeId);
                     SeatRange seatRange = new SeatRange(null, seats.get(0), seats.get(1));
                     SeatRange savedSeatRange = seatRangeDao.save(seatRange);
-                    return new Space(null, savedSeatRange, employee, oeCode, allocateSpaceRequest.getStartDate(),allocateSpaceRequest.getEndDate());
+                    return new Space(null, savedSeatRange, employee, oeCode, allocateSpaceRequest.getStartDate(), allocateSpaceRequest.getEndDate());
                 })
                 .collect(Collectors.toList());
     }
@@ -93,4 +96,20 @@ public class SpaceService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public void deleteSpace(Long oeCode, List<Long> spaceIds) {
+        try {
+            if (Objects.nonNull(oeCode)) {
+                oeCodeDao.findById(oeCode)
+                        .ifPresent(oeCodeEntity -> spaceDao.deleteByAssignedOeCodeId(oeCodeEntity));
+                return;
+            }
+            if (Objects.nonNull(spaceIds)) {
+                spaceDao.deleteAllById(spaceIds);
+            }
+        } catch (EmptyResultDataAccessException exception) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request id(s) not found");
+        }
+
+    }
 }

@@ -12,4 +12,5 @@ import java.util.List;
 public interface SpaceDao extends JpaRepository<Space, Long> {
     List<Space> findAllByAssignedOeCodeId(OECode assignedOeCodeId);
     List<Space> findAllByCreatedEmployeeId(Employee createdEmployeeId);
+    void deleteByAssignedOeCodeId(OECode assignedOeCodeId);
 }

@@ -14,13 +14,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SpaceServiceTest {
@@ -122,4 +123,29 @@ class SpaceServiceTest {
         }
     }
 
+    @Nested
+    class DeleteSpaceTest {
+
+        @Test
+        void shouldDeleteSpaceByOECode() {
+            when(oeCodeDao.findById(any())).thenReturn(Optional.of(new OECode(1L,"MBLD",500,null,null)));
+
+            spaceService.deleteSpace(1L, Collections.emptyList());
+
+            verify(spaceDao).deleteByAssignedOeCodeId(any());
+        }
+
+        @Test
+        void shouldNotCallDBIfOECodeIsNull() {
+            spaceService.deleteSpace(null, Collections.emptyList());
+            verify(spaceDao,times(0)).deleteByAssignedOeCodeId(any());
+        }
+
+        @Test
+        void shouldDeleteSpaceBySpaceIds() {
+            spaceService.deleteSpace(null, List.of(1L,2L));
+            verify(spaceDao).deleteAllById(List.of(1L,2L));
+            verify(oeCodeDao,times(0)).findById(any());
+        }
+    }
 }
