@@ -4,6 +4,7 @@ import com.destroyers.spaceallocation.dao.*;
 import com.destroyers.spaceallocation.entities.*;
 import com.destroyers.spaceallocation.model.space.AllocateSpaceRequest;
 import com.destroyers.spaceallocation.model.space.FloorRequest;
+import com.destroyers.spaceallocation.model.space.response.SpaceResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +35,16 @@ public class SpaceService {
     @Autowired
     private OECodeDao oeCodeDao;
 
+    public List<SpaceResponse> getSpaceAllocatedTo(Long buildingId, String pid) {
+        Employee employee = getEmployee(pid);
+        OECode oeCode = employee.getOeCode();
+        return seatRangeDao.findAllByOeCodeId(oeCode.getId()).stream()
+                .map(seatRange -> SpaceResponse.from(buildingId, seatRange))
+                .collect(Collectors.toList());
+    }
 
     public List<Long> allocate(String pid, AllocateSpaceRequest allocateSpaceRequest) {
-        Employee employee = employeeDao.findByMpid(pid).orElseThrow(() -> {
-            LOGGER.error("Employee not found. pid: {}", pid);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found for pid " + pid);
-        });
+        Employee employee = getEmployee(pid);
 
         List<Space> spaces = createSpaces(employee, allocateSpaceRequest);
 
@@ -70,5 +75,12 @@ public class SpaceService {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OeCodeId is not valid " + oeCodeId);
                 });
 
+    }
+
+    private Employee getEmployee(String pid) {
+        return employeeDao.findByMpid(pid).orElseThrow(() -> {
+            LOGGER.error("Employee not found. pid: {}", pid);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found for pid " + pid);
+        });
     }
 }

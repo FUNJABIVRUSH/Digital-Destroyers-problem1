@@ -29,4 +29,10 @@ public class Employee {
     @JoinColumn(name = "department_id", referencedColumnName = "id")
     private Department department;
 
+    @OneToOne
+    @JoinColumn(name = "oe_code_id", referencedColumnName = "id")
+    private OECode oeCode;
+
+
+
 }

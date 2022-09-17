@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class FloorRequest {
-    private Long floorId;
-    private Long zoneId;
     private Long startSeatId;
     private Long endSeatId;
 }

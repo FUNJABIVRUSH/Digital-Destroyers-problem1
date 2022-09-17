@@ -4,6 +4,7 @@ import com.destroyers.spaceallocation.dao.*;
 import com.destroyers.spaceallocation.entities.*;
 import com.destroyers.spaceallocation.model.space.AllocateSpaceRequest;
 import com.destroyers.spaceallocation.model.space.FloorRequest;
+import com.destroyers.spaceallocation.model.space.response.SpaceResponse;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,7 +59,7 @@ class SpaceServiceTest {
             when(oeCodeDao.findById(1L)).thenReturn(Optional.of(oeCode));
             when(spaceDao.saveAll(any())).thenReturn(List.of(new Space(2L, seatRange)));
 
-            FloorRequest floorRequest = new FloorRequest(1L, 1L, 1L, 10L);
+            FloorRequest floorRequest = new FloorRequest(1L, 10L);
             var allocateSpaceRequest = new AllocateSpaceRequest(1L, List.of(floorRequest));
 
             List<Long> spaceIds = spaceService.allocate(pid, allocateSpaceRequest);
@@ -66,5 +67,31 @@ class SpaceServiceTest {
             assertThat(spaceIds).isEqualTo(List.of(2L));
         }
     }
+
+    @Nested
+    class GetSpaceTest {
+
+        @Test
+        void shouldReturnSpaceAssignedToEmployee() {
+            String pid = "M12345";
+            Employee employee = mock(Employee.class);
+            OECode oeCode = new OECode(1L, "MBLD1", 100, null, "LOW");
+            Floor floor = new Floor(1L, "1", new Building(1L, "EON2") );
+            Zone zone = new Zone(1L, "A", floor);
+            Seat startSeat = new Seat(1L, "1", zone, "WINDOW", false);
+            Seat endSeat = new Seat(10L, "10", zone, "NON_WINDOW", false);
+
+            SeatRange seatRange = new SeatRange(null, startSeat, endSeat, employee, oeCode);
+
+            when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
+            when(employee.getOeCode()).thenReturn(oeCode);
+            when(seatRangeDao.findAllByOeCodeId(1L)).thenReturn(List.of(seatRange));
+
+            List<SpaceResponse> spaceResponses = spaceService.getSpaceAllocatedTo(1L, pid);
+
+            assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse(1L, 1L, 1L, 1L, 10L)));
+        }
+    }
+
 
 }
