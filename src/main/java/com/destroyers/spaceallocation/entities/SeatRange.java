@@ -1,10 +1,7 @@
 package com.destroyers.spaceallocation.entities;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -14,6 +11,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Table(name = "seat_range")
 @Entity
+@EqualsAndHashCode
 public class SeatRange {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
