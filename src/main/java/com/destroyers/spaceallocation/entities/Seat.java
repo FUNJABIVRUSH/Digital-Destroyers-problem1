@@ -11,16 +11,18 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "space")
+@Table(name = "seat")
 @Entity
-public class Space {
+public class Seat {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @ManyToOne
+    @JoinColumn(name = "zone_id", referencedColumnName = "id")
+    private Zone zone;
 
-    @OneToOne
-    @JoinColumn(name = "range_id", referencedColumnName = "id")
-    private SeatRange range;
-
+    private String type;
+    private Boolean isReserved;
 }

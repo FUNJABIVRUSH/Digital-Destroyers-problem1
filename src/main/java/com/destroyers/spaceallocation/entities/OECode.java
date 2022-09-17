@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "oe_codes")
+@Table(name = "oe_code")
 @Entity
 public class OECode {
 

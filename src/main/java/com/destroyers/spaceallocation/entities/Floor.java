@@ -11,16 +11,15 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "space")
+@Table(name = "floor")
 @Entity
-public class Space {
+public class Floor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-
-    @OneToOne
-    @JoinColumn(name = "range_id", referencedColumnName = "id")
-    private SeatRange range;
+    @ManyToOne
+    @JoinColumn(name = "building_id", referencedColumnName = "id")
+    private Building building;
 
 }
