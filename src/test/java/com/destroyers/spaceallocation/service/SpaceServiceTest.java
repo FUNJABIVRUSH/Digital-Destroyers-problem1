@@ -13,6 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.List;
 
@@ -58,10 +60,10 @@ class SpaceServiceTest {
             when(seatDao.findAllById(List.of(1L, 10L))).thenReturn(List.of(startSeat, endSeat));
             when(seatRangeDao.save(seatRange)).thenReturn(seatRange);
             when(oeCodeDao.findById(1L)).thenReturn(Optional.of(oeCode));
-            when(spaceDao.saveAll(any())).thenReturn(List.of(new Space(2L, seatRange)));
+            when(spaceDao.saveAll(any())).thenReturn(List.of(new Space(2L, seatRange, LocalDate.now(),LocalDate.now().plusDays(5L))));
 
             FloorRequest floorRequest = new FloorRequest(1L, 10L);
-            var allocateSpaceRequest = new AllocateSpaceRequest(1L, List.of(floorRequest));
+            var allocateSpaceRequest = new AllocateSpaceRequest(1L, LocalDate.now(),LocalDate.now().plusDays(5L),List.of(floorRequest));
 
             List<Long> spaceIds = spaceService.allocate(pid, allocateSpaceRequest);
 
@@ -82,15 +84,17 @@ class SpaceServiceTest {
             Seat startSeat = new Seat(1L, "1", zone, "WINDOW", false);
             Seat endSeat = new Seat(10L, "10", zone, "NON_WINDOW", false);
 
-            SeatRange seatRange = new SeatRange(null, startSeat, endSeat, employee, oeCode);
+            SeatRange seatRange = new SeatRange(1L, startSeat, endSeat, employee, oeCode);
 
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
             when(employee.getOeCode()).thenReturn(oeCode);
             when(seatRangeDao.findAllByOeCodeId(1L)).thenReturn(List.of(seatRange));
+            when(spaceDao.findByRangeId(1L)).thenReturn(new Space(1L,seatRange, LocalDate.now(),LocalDate.now().plusDays(5L)));
 
             List<SpaceResponse> spaceResponses = spaceService.getSpaceAllocatedTo(pid);
 
-            assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse(1L, 1L, 1L, 10L)));
+            assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse(1L, 1L, 1L, 10L,
+                    LocalDate.now(),LocalDate.now().plusDays(5L))));
         }
     }
 
@@ -112,10 +116,12 @@ class SpaceServiceTest {
 
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
             when(seatRangeDao.findAllByEmployeeId(1L)).thenReturn(List.of(seatRange));
+            when(spaceDao.findByRangeId(1L)).thenReturn(new Space(1L,seatRange, LocalDate.now(),LocalDate.now().plusDays(5L)));
 
             List<SpaceResponse> spaceResponses = spaceService.getSpaceReservedBy(pid);
 
-            assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse( 1L, 1L, 1L, 10L)));
+            assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse( 1L, 1L, 1L, 10L,
+                    LocalDate.now(),LocalDate.now().plusDays(5L))));
         }
     }
 

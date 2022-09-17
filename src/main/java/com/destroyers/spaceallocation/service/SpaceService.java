@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,8 +41,13 @@ public class SpaceService {
         Employee employee = getEmployee(pid);
         OECode oeCode = employee.getOeCode();
         return seatRangeDao.findAllByOeCodeId(oeCode.getId()).stream()
-                .map(SpaceResponse::from)
+                .map(seatRange -> getSpaceResponse(spaceDao, seatRange))
                 .collect(Collectors.toList());
+    }
+
+    private SpaceResponse getSpaceResponse(SpaceDao spaceDao, SeatRange seatRange) {
+        Space space = spaceDao.findByRangeId(seatRange.getId());
+        return SpaceResponse.from(seatRange, space);
     }
 
     public List<Long> allocate(String pid, AllocateSpaceRequest allocateSpaceRequest) {
@@ -63,7 +70,7 @@ public class SpaceService {
                     OECode oeCode = getOeCode(oeCodeId);
                     SeatRange seatRange = new SeatRange(null, seats.get(0), seats.get(1), employee, oeCode);
                     SeatRange savedSeatRange = seatRangeDao.save(seatRange);
-                    return new Space(null, savedSeatRange);
+                    return new Space(null, savedSeatRange, allocateSpaceRequest.getStartDate(),allocateSpaceRequest.getEndDate());
                 })
                 .collect(Collectors.toList());
     }
@@ -87,7 +94,8 @@ public class SpaceService {
     public List<SpaceResponse> getSpaceReservedBy(String pid) {
         Employee employee = getEmployee(pid);
         return seatRangeDao.findAllByEmployeeId(employee.getId()).stream()
-                .map(SpaceResponse::from)
+                .map(seatRange -> getSpaceResponse(spaceDao, seatRange))
                 .collect(Collectors.toList());
     }
+
 }

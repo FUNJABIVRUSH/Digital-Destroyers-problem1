@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @AllArgsConstructor
@@ -14,5 +15,7 @@ import java.util.List;
 public class AllocateSpaceRequest {
 
     private Long oeCodeId;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private List<FloorRequest> floorRequests;
 }

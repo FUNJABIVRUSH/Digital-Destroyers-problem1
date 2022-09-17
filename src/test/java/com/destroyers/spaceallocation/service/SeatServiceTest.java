@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +40,7 @@ class SeatServiceTest {
         void shouldReserveSeatIfSeatIsWithinSpaceOfUsersOECode() {
             String pid = "M12345";
             Seat reservedSeat = new Seat(2L, "2", null, "WINDOW", true);
-            SpaceResponse spaceResponse = new SpaceResponse(1L, 1L, 1L, 10L);
+            SpaceResponse spaceResponse = new SpaceResponse(1L, 1L, 1L, 10L, LocalDate.now(),LocalDate.now().plusDays(5));
 
             when(spaceService.getSpaceAllocatedTo(pid)).thenReturn(List.of(spaceResponse));
             when(seatDao.findById(2L)).thenReturn(Optional.of(new Seat(2L, "2", null, "WINDOW", false)));
