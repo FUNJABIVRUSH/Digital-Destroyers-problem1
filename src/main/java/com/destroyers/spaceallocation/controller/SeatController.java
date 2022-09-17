@@ -15,7 +15,7 @@ public class SeatController {
     @Autowired
     private SeatService seatService;
 
-    @PostMapping
+    @PostMapping("/reserve")
     private List<Long> reserveSeat(@RequestBody SeatReservationRequest seatReservationRequest) {
         return seatService.reserve(seatReservationRequest);
     }
