@@ -44,7 +44,7 @@ class DepartmentServiceTest {
             OECode oeCode1 = new OECode(2L, "MBLD11", 100, null, "MID");
             OECode oeCode2 = new OECode(3L, "MBLD12", 10, null, "MID");
             Department department = new Department(1L, "Private Banking",building);
-            Employee employee = new Employee(1L, pid, "User-1", ADMIN, department);
+            Employee employee = new Employee(1L, pid, "User-1", ADMIN, department, oeCode1);
 
             DepartmentAdmin departmentAdmin = new DepartmentAdmin(1L, employee, department);
 

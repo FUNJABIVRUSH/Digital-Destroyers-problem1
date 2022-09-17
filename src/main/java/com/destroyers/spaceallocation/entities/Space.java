@@ -17,10 +17,8 @@ public class Space {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
 
     @OneToOne
     @JoinColumn(name = "range_id", referencedColumnName = "id")
     private SeatRange range;
-
 }

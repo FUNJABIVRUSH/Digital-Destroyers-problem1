@@ -1,31 +1,56 @@
-import {FlexBox} from "react-styled-flex";
+import { useState } from "react";
+import { FlexBox } from "react-styled-flex";
 import styled from "styled-components";
+import { getEmployeeByPID } from "../../shared/api";
 
 export const Login = () => {
 
-    return <StyledLoginContainer  alignItems={'center'} justifyContent={'center'} column  gap="15px">
-        <h3>Welcome to SAT</h3>
-        <h5>Please enter your MPID/PID to continue</h5>
-        <StyledInput placeholder="Enter your MPID/PID" />
-        <StyledButton>Login</StyledButton>
+    const [empPID, setEmpPID] = useState('');
+
+    const login = () => {
+        getEmployeeByPID(empPID).then(response => console.log('res', response)
+        );
+    }
+
+    return <StyledLoginContainer alignItems={'center'} justifyContent={'center'} column gap="15px">
+        <StylesSubDiv>
+            <h3>Welcome to SAT</h3>
+            <h5>Please enter your MPID/PID to continue</h5>
+            <StyledInput placeholder="Enter your MPID/PID" value={empPID} onChange={e => setEmpPID(e.target.value)} />
+            <StyledButton onClick={login}>Login</StyledButton>
+        </StylesSubDiv>
     </StyledLoginContainer>
 }
 
 const StyledLoginContainer = styled(FlexBox)`
-    height: 100vh;
-    max-width: 100%;
-    min-width: 100%;
+align-items: center;
+justify-content: center;
+flex: 1;
+display: flex;
+padding: 15rem;
+background-color: #e5e5e5;
 `
 
 const StyledInput = styled.input`
 height: 30px;
-width: 20%;
-}`
+`
+
+const StylesSubDiv = styled.div`
+border: 2px solid;
+flex: 1;
+align-items: center;
+align-self: center;
+justify-self: center;
+display:flex;
+flex-direction: column;
+padding:10px;
+background-color:white;
+`
 
 const StyledButton = styled.button`
 height: 40px;
-    width: 10%;
-    background: black;
-    color: white;
-    cursor:pointer;
-    `;
+margin-top:10px;
+background: black;
+color: white;
+cursor:pointer;
+`;

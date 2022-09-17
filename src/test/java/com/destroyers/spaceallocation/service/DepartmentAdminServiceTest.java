@@ -38,7 +38,7 @@ class DepartmentAdminServiceTest {
             Building building = new Building(1L, "EON2");
 
             Department department = new Department(1L, "Private Banking", building);
-            Employee employee = new Employee(1L, "M12345", "User-1", ADMIN, department);
+            Employee employee = new Employee(1L, "M12345", "User-1", ADMIN, department, null);
 
             DepartmentAdmin departmentAdmin = new DepartmentAdmin(1L, employee, department);
             when(departmentAdminDao.findByEmployeeId(employeeId)).thenReturn(List.of(departmentAdmin));

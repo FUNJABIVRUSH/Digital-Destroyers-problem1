@@ -35,7 +35,7 @@ class EmployeeServiceTest {
         void shouldReturnAllEmployees() {
             Building building = new Building(1L, "EON2");
             Department department = new Department(1L, "Private Banking", building);
-            Employee employee = new Employee(1L, "M12345", "User-1", ADMIN, department);
+            Employee employee = new Employee(1L, "M12345", "User-1", ADMIN, department, null);
             when(employeeDao.findAll()).thenReturn(List.of(employee));
 
             List<EmployeeResponse> employees = employeeService.getAll();
@@ -52,7 +52,7 @@ class EmployeeServiceTest {
         void shouldReturnEmployeeByMpid() {
             Building building = new Building(1L, "EON2");
             Department department = new Department(1L, "Private Banking", building);
-            Employee employee = new Employee(1L, "M12345", "User-1", ADMIN, department);
+            Employee employee = new Employee(1L, "M12345", "User-1", ADMIN, department, null);
             when(employeeDao.findByMpid(employee.getMpid())).thenReturn(Optional.of(employee));
 
             EmployeeResponse employeeResponse = employeeService.getByPid(employee.getMpid());
