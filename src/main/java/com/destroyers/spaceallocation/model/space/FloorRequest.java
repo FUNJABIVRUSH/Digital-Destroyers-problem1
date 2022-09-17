@@ -8,6 +8,6 @@ import lombok.Data;
 public class FloorRequest {
     private Long floorId;
     private Long zoneId;
-    private Long startSeatNo;
-    private Long endSeatNo;
+    private Long startSeatId;
+    private Long endSeatId;
 }
