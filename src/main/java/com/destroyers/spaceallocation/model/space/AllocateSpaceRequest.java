@@ -12,10 +12,8 @@ import java.util.List;
 public class AllocateSpaceRequest {
 
     private String buildingId;
-    private String zoneId;
-    private String startSeatNo;
-    private String endSeatNo;
     private String departmentId;
-    private List<String> oeCodes;
+    private List<FloorRequest> floorRequests;
+    private String oeCode;
 
 }
