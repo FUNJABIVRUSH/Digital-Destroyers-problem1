@@ -8,14 +8,14 @@ INSERT INTO "ZONE"(id, name, floor_id) VALUES (2, 'B', 1);
 INSERT INTO "ZONE"(id, name, floor_id) VALUES (3, 'A', 2);
 INSERT INTO "ZONE"(id, name, floor_id) VALUES (4, 'B', 2);
 
-INSERT INTO seat(id, number, zone_id, type, is_reserved) VALUES (1, '1', 1, 'WINDOW', 0);
-INSERT INTO seat(id, number, zone_id, type, is_reserved) VALUES (2, '2', 1, 'NON_WINDOW', 0);
-INSERT INTO seat(id, number, zone_id, type, is_reserved) VALUES (3, '1', 2, 'WINDOW',0);
-INSERT INTO seat(id, number, zone_id, type, is_reserved) VALUES (4, '2', 2, 'NON_WINDOW',0);
-INSERT INTO seat(id, number, zone_id, type, is_reserved) VALUES (5, '1', 3, 'WINDOW',0);
-INSERT INTO seat(id, number, zone_id, type, is_reserved) VALUES (6, '2', 3, 'NON_WINDOW',0);
-INSERT INTO seat(id, number, zone_id, type, is_reserved) VALUES (7, '1', 4, 'WINDOW',0);
-INSERT INTO seat(id, number, zone_id, type, is_reserved) VALUES (8, '2', 4, 'NON_WINDOW',0);
+INSERT INTO seat(id, number, zone_id, type) VALUES (1, '1', 1, 'WINDOW');
+INSERT INTO seat(id, number, zone_id, type) VALUES (2, '2', 1, 'NON_WINDOW');
+INSERT INTO seat(id, number, zone_id, type) VALUES (3, '1', 2, 'WINDOW');
+INSERT INTO seat(id, number, zone_id, type) VALUES (4, '2', 2, 'NON_WINDOW');
+INSERT INTO seat(id, number, zone_id, type) VALUES (5, '1', 3, 'WINDOW');
+INSERT INTO seat(id, number, zone_id, type) VALUES (6, '2', 3, 'NON_WINDOW');
+INSERT INTO seat(id, number, zone_id, type) VALUES (7, '1', 4, 'WINDOW');
+INSERT INTO seat(id, number, zone_id, type) VALUES (8, '2', 4, 'NON_WINDOW');
 
 
 INSERT INTO department (id, name, building_id) VALUES (1, 'Private Banking', 1);

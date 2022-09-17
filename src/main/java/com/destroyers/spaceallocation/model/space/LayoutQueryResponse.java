@@ -19,6 +19,5 @@ public class LayoutQueryResponse {
     private Long seatId;
     private String seatNumber;
     private String seatType;
-    private Boolean isReserved;
 }
 

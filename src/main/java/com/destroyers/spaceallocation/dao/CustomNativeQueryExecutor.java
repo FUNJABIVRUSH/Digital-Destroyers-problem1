@@ -18,7 +18,7 @@ public class CustomNativeQueryExecutor {
     }
 
     public List<LayoutQueryResponse> getLayoutByBuildingId(Long buildingId) {
-        return entityManager.createNativeQuery("select building.name as buildingName, floor.id as floorId, floor.name as floorName, zone.id as zoneId, zone.name as zoneName, seat.id as seatId, seat.number as seatNumber, seat.type as seatType, seat.is_reserved as isReserved " +
+        return entityManager.createNativeQuery("select building.name as buildingName, floor.id as floorId, floor.name as floorName, zone.id as zoneId, zone.name as zoneName, seat.id as seatId, seat.number as seatNumber, seat.type as seatType" +
                         "                        from building join floor on building.id = floor.building_id join zone on zone.floor_id = floor.id join seat on seat.zone_id = zone.id " +
                         "                       where building.id = ?1","LayoutQuery")
                 .setParameter(1, buildingId)

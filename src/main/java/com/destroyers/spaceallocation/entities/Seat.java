@@ -24,6 +24,4 @@ public class Seat {
     private Zone zone;
 
     private String type;
-    @Column(name = "is_reserved")
-    private Boolean isReserved;
 }

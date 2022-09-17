@@ -50,7 +50,7 @@ class SeatServiceTest {
             String pid = "M12345";
             LocalDate startDate = LocalDate.now().plusDays(1);
             LocalDate endDate = LocalDate.now().plusDays(3);
-            Seat seat = new Seat(2L, "2", null, "WINDOW", false);
+            Seat seat = new Seat(2L, "2", null, "WINDOW");
             Employee employee = mock(Employee.class);
             SeatReservation seatReservation = new SeatReservation(1L, seat, startDate, endDate, employee);
 
@@ -70,7 +70,7 @@ class SeatServiceTest {
             Employee employee = mock(Employee.class);
             LocalDate startDate = LocalDate.now().plusDays(1);
             LocalDate endDate = LocalDate.now().plusDays(3);
-            Seat seat = new Seat(2L, "2", null, "WINDOW", false);
+            Seat seat = new Seat(2L, "2", null, "WINDOW");
             SeatReservation seatReservation = new SeatReservation(1L, seat, startDate, endDate, employee);
 
             when(seatDao.findById(2L)).thenReturn(Optional.of(seat));

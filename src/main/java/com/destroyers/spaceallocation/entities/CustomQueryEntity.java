@@ -17,8 +17,7 @@ import javax.persistence.Id;
                         @ColumnResult(name = "zoneName", type = String.class),
                         @ColumnResult(name = "seatId", type = Long.class),
                         @ColumnResult(name = "seatNumber", type = String.class),
-                        @ColumnResult(name = "seatType", type = String.class),
-                        @ColumnResult(name = "isReserved", type = Boolean.class),
+                        @ColumnResult(name = "seatType", type = String.class)
                 }
         )
 })

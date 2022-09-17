@@ -12,4 +12,7 @@ public interface SeatReservationDao extends JpaRepository<SeatReservation, Long>
 
     @Query(value = "select * from seat_reservation where seat_id = :seatId AND ((start_date <= :startDate AND end_date >= :startDate) OR (start_date <= :endDate AND end_date >= :endDate))", nativeQuery = true)
     List<SeatReservation> getReservationsBetween(Long seatId, LocalDate startDate, LocalDate endDate);
+
+    @Query(value = "select * from seat_reservation where seat_id in :seatIds AND ((start_date <= :startDate AND end_date >= :startDate) OR (start_date <= :endDate AND end_date >= :endDate))", nativeQuery = true)
+    List<SeatReservation> getReservationsForSeatIdsAndBetween(List<Long> seatIds, LocalDate startDate, LocalDate endDate);
 }

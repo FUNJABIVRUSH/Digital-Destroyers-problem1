@@ -1,6 +1,10 @@
 package com.destroyers.spaceallocation.service;
 
 import com.destroyers.spaceallocation.dao.CustomNativeQueryExecutor;
+import com.destroyers.spaceallocation.dao.SeatReservationDao;
+import com.destroyers.spaceallocation.entities.Seat;
+import com.destroyers.spaceallocation.entities.SeatReservation;
+import com.destroyers.spaceallocation.model.DateRange;
 import com.destroyers.spaceallocation.model.space.LayoutQueryResponse;
 import com.destroyers.spaceallocation.model.space.response.FloorResponse;
 import com.destroyers.spaceallocation.model.space.response.LayoutResponse;
@@ -11,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,47 +25,70 @@ public class LayoutService {
     @Autowired
     private final CustomNativeQueryExecutor nativeQueryExecutor;
 
-    public LayoutService(CustomNativeQueryExecutor layoutDao) {
+    @Autowired
+    private final SeatReservationDao seatReservationDao;
+
+    public LayoutService(CustomNativeQueryExecutor layoutDao, SeatReservationDao seatReservationDao) {
         this.nativeQueryExecutor = layoutDao;
+        this.seatReservationDao = seatReservationDao;
     }
 
-    public LayoutResponse getLayout(Long buildingId){
-        return getLayoutResponse(nativeQueryExecutor.getLayoutByBuildingId(buildingId));
+    public LayoutResponse getLayout(Long buildingId, DateRange dateRange) {
+        return getLayoutResponse(nativeQueryExecutor.getLayoutByBuildingId(buildingId), dateRange);
     }
 
-    private LayoutResponse getLayoutResponse(List<LayoutQueryResponse> spaceQueryResponses) {
+    private LayoutResponse getLayoutResponse(List<LayoutQueryResponse> spaceQueryResponses, DateRange dateRange) {
+        Set<Long> reservedSeatIds = Objects.isNull(dateRange) ? Set.of() :
+                getReservedSeatIds(spaceQueryResponses, dateRange);
+
         Map<Long, List<LayoutQueryResponse>> spaceResponseByFloorId = spaceQueryResponses.stream()
                 .collect(Collectors.groupingBy(LayoutQueryResponse::getFloorId));
 
         List<FloorResponse> floorResponses = spaceResponseByFloorId.values()
                 .stream()
-                .map(this::getFloorResponses)
+                .map(spaceQueryResponsesForFloor -> getFloorResponses(spaceQueryResponsesForFloor, reservedSeatIds))
                 .collect(Collectors.toList());
         LayoutQueryResponse firstSpaceResponse = spaceQueryResponses.get(0);
         return new LayoutResponse(firstSpaceResponse.getBuildingName(), floorResponses);
     }
 
-    private FloorResponse getFloorResponses(List<LayoutQueryResponse> spaceQueryResponses) {
+    private FloorResponse getFloorResponses(List<LayoutQueryResponse> spaceQueryResponses, Set<Long> reservedSeatIds) {
 
         Map<Long, List<LayoutQueryResponse>> spaceResponseByZoneId = spaceQueryResponses.stream()
                 .collect(Collectors.groupingBy(LayoutQueryResponse::getZoneId));
 
         List<ZoneResponse> zoneResponses = spaceResponseByZoneId.values()
                 .stream()
-                .map(this::getZoneResponse)
+                .map(spaceQueryResponsesForZone -> getZoneResponse(spaceQueryResponsesForZone, reservedSeatIds))
                 .collect(Collectors.toList());
         LayoutQueryResponse firstSpaceResponse = spaceQueryResponses.get(0);
         return new FloorResponse(firstSpaceResponse.getFloorId(), firstSpaceResponse.getFloorName(), zoneResponses);
     }
 
 
-    private ZoneResponse getZoneResponse(List<LayoutQueryResponse> spaceQueryResponses) {
-
+    private ZoneResponse getZoneResponse(List<LayoutQueryResponse> spaceQueryResponses, Set<Long> reservedSeatIds) {
         List<SeatResponse> seatResponses = spaceQueryResponses.stream()
-                .map(spaceResponse -> new SeatResponse(spaceResponse.getSeatId(), spaceResponse.getSeatNumber(), spaceResponse.getIsReserved(), spaceResponse.getSeatType()))
+                .map(spaceResponse -> getSeatResponse(reservedSeatIds, spaceResponse))
                 .collect(Collectors.toList());
 
         LayoutQueryResponse firstSpaceResponse = spaceQueryResponses.get(0);
         return new ZoneResponse(firstSpaceResponse.getZoneId(), firstSpaceResponse.getZoneName(), seatResponses);
     }
+
+    private SeatResponse getSeatResponse(Set<Long> reservedSeatIds, LayoutQueryResponse spaceResponse) {
+        boolean isReserved = reservedSeatIds.contains(spaceResponse.getSeatId());
+        return new SeatResponse(spaceResponse.getSeatId(), spaceResponse.getSeatNumber(), isReserved, spaceResponse.getSeatType());
+    }
+
+    private Set<Long> getReservedSeatIds(List<LayoutQueryResponse> spaceQueryResponses, DateRange dateRange) {
+        List<Long> seatIds = spaceQueryResponses.stream()
+                .map(LayoutQueryResponse::getSeatId)
+                .collect(Collectors.toList());
+
+        return seatReservationDao.getReservationsForSeatIdsAndBetween(seatIds, dateRange.getStartDate(), dateRange.getEndDate())
+                .stream().map(SeatReservation::getSeat)
+                .map(Seat::getId)
+                .collect(Collectors.toSet());
+    }
+
 }

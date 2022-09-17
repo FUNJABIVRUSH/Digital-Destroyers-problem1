@@ -80,8 +80,8 @@ class SpaceServiceTest {
             OECode oeCode = new OECode(1L, "MBLD1", 100, null, "LOW");
             Floor floor = new Floor(1L, "1", new Building(1L, "EON2"));
             Zone zone = new Zone(1L, "A", floor);
-            Seat startSeat = new Seat(1L, "1", zone, "WINDOW", false);
-            Seat endSeat = new Seat(10L, "10", zone, "NON_WINDOW", false);
+            Seat startSeat = new Seat(1L, "1", zone, "WINDOW");
+            Seat endSeat = new Seat(10L, "10", zone, "NON_WINDOW");
 
             SeatRange seatRange = new SeatRange(1L, startSeat, endSeat);
 
@@ -107,8 +107,8 @@ class SpaceServiceTest {
             Employee employee = new Employee(1L,pid,"XYZ", EmployeeRole.EMPLOYEE,null,oeCode);
             Floor floor = new Floor(1L, "1", new Building(1L, "EON2") );
             Zone zone = new Zone(1L, "A", floor);
-            Seat startSeat = new Seat(1L, "1", zone, "WINDOW", false);
-            Seat endSeat = new Seat(10L, "10", zone, "NON_WINDOW", false);
+            Seat startSeat = new Seat(1L, "1", zone, "WINDOW");
+            Seat endSeat = new Seat(10L, "10", zone, "NON_WINDOW");
 
             SeatRange seatRange = new SeatRange(1L, startSeat, endSeat);
 
