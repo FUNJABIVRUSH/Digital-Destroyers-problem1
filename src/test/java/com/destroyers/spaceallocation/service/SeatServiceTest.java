@@ -1,12 +1,14 @@
 package com.destroyers.spaceallocation.service;
 
+import com.destroyers.spaceallocation.dao.EmployeeDao;
 import com.destroyers.spaceallocation.dao.SeatDao;
 import com.destroyers.spaceallocation.dao.SeatReservationDao;
+import com.destroyers.spaceallocation.entities.Employee;
 import com.destroyers.spaceallocation.entities.Seat;
 import com.destroyers.spaceallocation.entities.SeatReservation;
 import com.destroyers.spaceallocation.model.DateRange;
+import com.destroyers.spaceallocation.model.seat.request.SeatRequest;
 import com.destroyers.spaceallocation.model.seat.request.SeatReservationRequest;
-import com.destroyers.spaceallocation.model.space.response.SpaceResponse;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,8 +24,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -33,13 +34,13 @@ class SeatServiceTest {
     private SeatService seatService;
 
     @Mock
-    private SpaceService spaceService;
-
-    @Mock
     private SeatDao seatDao;
 
     @Mock
     private SeatReservationDao seatReservationDao;
+
+    @Mock
+    private EmployeeDao employeeDao;
 
     @Nested
     class ReserveSeat {
@@ -50,35 +51,34 @@ class SeatServiceTest {
             LocalDate startDate = LocalDate.now().plusDays(1);
             LocalDate endDate = LocalDate.now().plusDays(3);
             Seat seat = new Seat(2L, "2", null, "WINDOW", false);
-            SeatReservation seatReservation = new SeatReservation(1L, seat, startDate, endDate);
+            Employee employee = mock(Employee.class);
+            SeatReservation seatReservation = new SeatReservation(1L, seat, startDate, endDate, employee);
 
-            SpaceResponse spaceResponse = new SpaceResponse(1L, 1L, 1L, 10L, LocalDate.now(),LocalDate.now().plusDays(5));
-
-            when(spaceService.getSpaceAllocatedTo(pid)).thenReturn(List.of(spaceResponse));
             when(seatDao.findById(2L)).thenReturn(Optional.of(seat));
             when(seatReservationDao.saveAll(any())).thenReturn(List.of(seatReservation));
+            when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
 
-            List<Long> reservationIds = seatService.reserve(pid, new SeatReservationRequest(2L, List.of(new DateRange(startDate, endDate))));
+            List<Long> reservationIds = seatService.reserve(new SeatReservationRequest(List.of(new SeatRequest(2L, pid)), List.of(new DateRange(startDate, endDate))));
 
             assertThat(reservationIds).isEqualTo(List.of(1L));
-            verify(seatReservationDao).saveAll(List.of(new SeatReservation(null, seat, startDate, endDate)));
+            verify(seatReservationDao).saveAll(List.of(new SeatReservation(null, seat, startDate, endDate, employee)));
         }
 
         @Test
         void shouldThrowExceptionIfSeatIsAlreadyReserved() {
             String pid = "M12345";
+            Employee employee = mock(Employee.class);
             LocalDate startDate = LocalDate.now().plusDays(1);
             LocalDate endDate = LocalDate.now().plusDays(3);
             Seat seat = new Seat(2L, "2", null, "WINDOW", false);
-            SeatReservation seatReservation = new SeatReservation(1L, seat, startDate, endDate);
-            SpaceResponse spaceResponse = new SpaceResponse(1L, 1L, 1L, 10L);
+            SeatReservation seatReservation = new SeatReservation(1L, seat, startDate, endDate, employee);
 
-            when(spaceService.getSpaceAllocatedTo(pid)).thenReturn(List.of(spaceResponse));
             when(seatDao.findById(2L)).thenReturn(Optional.of(seat));
             when(seatReservationDao.getReservationsBetween(2L, startDate, endDate)).thenReturn(List.of(seatReservation));
+            when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
 
             assertThrows(ResponseStatusException.class,
-                    () -> seatService.reserve(pid, new SeatReservationRequest(2L, List.of(new DateRange(startDate, endDate)))),
+                    () -> seatService.reserve(new SeatReservationRequest(List.of(new SeatRequest(2L, pid)), List.of(new DateRange(startDate, endDate)))),
                     "Seat already reserved for given dates");
         }
 

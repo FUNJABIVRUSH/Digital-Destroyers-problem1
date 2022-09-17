@@ -1,13 +1,15 @@
 package com.destroyers.spaceallocation.service;
 
 
+import com.destroyers.spaceallocation.dao.EmployeeDao;
 import com.destroyers.spaceallocation.dao.SeatDao;
 import com.destroyers.spaceallocation.dao.SeatReservationDao;
+import com.destroyers.spaceallocation.entities.Employee;
 import com.destroyers.spaceallocation.entities.Seat;
 import com.destroyers.spaceallocation.entities.SeatReservation;
 import com.destroyers.spaceallocation.model.DateRange;
+import com.destroyers.spaceallocation.model.seat.request.SeatRequest;
 import com.destroyers.spaceallocation.model.seat.request.SeatReservationRequest;
-import com.destroyers.spaceallocation.model.space.response.SpaceResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class SeatService {
@@ -24,34 +27,31 @@ public class SeatService {
     private final Logger LOGGER = LoggerFactory.getLogger(SeatService.class);
 
     @Autowired
-    private SpaceService spaceService;
-
-    @Autowired
     private SeatDao seatDao;
 
     @Autowired
     private SeatReservationDao seatReservationDao;
 
-    public List<Long> reserve(String pid, SeatReservationRequest seatReservationRequest) {
-        Long seatId = seatReservationRequest.getSeatId();
-        if (!isUserAllowedToReserveSeat(pid, seatId)) {
-            LOGGER.error("Not allowed to reserve seat, this seat is now allocated for your team");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not allowed to reserve seat, this seat is now allocated for your team");
-        }
-        Seat seat = getSeat(seatId);
-        List<SeatReservation> seatReservations = getSeatReservations(seatReservationRequest, seat);
+    @Autowired
+    private EmployeeDao employeeDao;
 
+    public List<Long> reserve(SeatReservationRequest seatReservationRequest) {
+        List<DateRange> dateRanges = seatReservationRequest.getDateRanges();
+        List<SeatReservation> seatReservations = seatReservationRequest.getSeatRequests().stream()
+                .flatMap(seatRequest -> getSeatReservations(dateRanges, seatRequest))
+                .collect(Collectors.toList());
         return seatReservationDao.saveAll(seatReservations).stream()
                 .map(SeatReservation::getId)
                 .collect(Collectors.toList());
     }
 
-    private List<SeatReservation> getSeatReservations(SeatReservationRequest seatReservationRequest, Seat seat) {
-        return seatReservationRequest.getDateRanges()
+    private Stream<SeatReservation> getSeatReservations(List<DateRange> dateRanges, SeatRequest seatRequest) {
+        Seat seat = getSeat(seatRequest.getSeatId());
+        Employee employee = getEmployee(seatRequest.getPid());
+        return dateRanges
                 .stream()
                 .peek(dateRange -> checkIfSeatIsReserved(seat.getId(), dateRange))
-                .map(dateRange -> new SeatReservation(null, seat, dateRange.getStartDate(), dateRange.getEndDate()))
-                .collect(Collectors.toList());
+                .map(dateRange -> new SeatReservation(null, seat, dateRange.getStartDate(), dateRange.getEndDate(), employee));
     }
 
     private Seat getSeat(Long seatId) {
@@ -62,16 +62,18 @@ public class SeatService {
                 });
     }
 
+    private Employee getEmployee(String pid) {
+        return employeeDao.findByMpid(pid).orElseThrow(() -> {
+            LOGGER.error("Employee not found. pid: {}", pid);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found for employeeId " + pid);
+        });
+    }
+
     private void checkIfSeatIsReserved(Long seatId, DateRange dateRange){
         List<SeatReservation> reservationsBetween = seatReservationDao.getReservationsBetween(seatId, dateRange.getStartDate(), dateRange.getEndDate());
         if( !reservationsBetween.isEmpty()){
             LOGGER.error("Seat already reserved");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Seat already reserved for given dates");
         }
-    }
-    private boolean isUserAllowedToReserveSeat(String pid, Long seatId) {
-        List<SpaceResponse> spaceAllocatedToOE = spaceService.getSpaceAllocatedTo(pid);
-        return spaceAllocatedToOE.stream()
-                .anyMatch(spaceResponse -> spaceResponse.getStartSeatId() <= seatId && seatId <= spaceResponse.getEndSeatId());
     }
 }

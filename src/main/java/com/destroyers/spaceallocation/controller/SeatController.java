@@ -16,8 +16,7 @@ public class SeatController {
     private SeatService seatService;
 
     @PostMapping
-    private List<Long> reserveSeat(@RequestParam String pid,
-                                   @RequestBody SeatReservationRequest seatReservationRequest) {
-        return seatService.reserve(pid, seatReservationRequest);
+    private List<Long> reserveSeat(@RequestBody SeatReservationRequest seatReservationRequest) {
+        return seatService.reserve(seatReservationRequest);
     }
 }

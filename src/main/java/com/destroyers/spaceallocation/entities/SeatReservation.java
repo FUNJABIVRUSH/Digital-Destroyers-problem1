@@ -27,4 +27,8 @@ public class SeatReservation {
     @Column(name = "end_date", columnDefinition = "DATE")
     private LocalDate endDate;
 
+    @OneToOne
+    @JoinColumn(name = "employee_id", referencedColumnName = "id")
+    private Employee employee;
+
 }
