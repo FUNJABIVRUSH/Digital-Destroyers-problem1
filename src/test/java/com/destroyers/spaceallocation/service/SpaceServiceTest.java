@@ -92,7 +92,7 @@ class SpaceServiceTest {
 
             List<SpaceResponse> spaceResponses = spaceService.getSpaceAllocatedTo(pid);
 
-            assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse(1L,1L, 1L, 1L, 10L,
+            assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse(1L,1L, 1L, 1L, 10L,1L,
                     LocalDate.now(), LocalDate.now().plusDays(5L))));
         }
     }
@@ -118,7 +118,7 @@ class SpaceServiceTest {
 
             List<SpaceResponse> spaceResponses = spaceService.getSpaceReservedBy(pid);
 
-            assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse(1L,1L, 1L, 1L, 10L,
+            assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse(1L,1L, 1L, 1L, 10L,1L,
                     LocalDate.now(), LocalDate.now().plusDays(5L))));
         }
     }

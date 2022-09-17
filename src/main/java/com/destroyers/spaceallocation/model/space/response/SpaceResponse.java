@@ -1,6 +1,9 @@
 package com.destroyers.spaceallocation.model.space.response;
 
-import com.destroyers.spaceallocation.entities.*;
+import com.destroyers.spaceallocation.entities.Floor;
+import com.destroyers.spaceallocation.entities.Seat;
+import com.destroyers.spaceallocation.entities.Space;
+import com.destroyers.spaceallocation.entities.Zone;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +22,7 @@ public class SpaceResponse {
     private Long zoneId;
     private Long startSeatId;
     private Long endSeatId;
+    private Long oeCodeId;
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate startDate;
     @JsonFormat(pattern="yyyy-MM-dd")
@@ -29,6 +33,6 @@ public class SpaceResponse {
         Seat endSeat = space.getRange().getEndSeat();
         Zone zone = startSeat.getZone();
         Floor floor = zone.getFloor();
-        return new SpaceResponse(space.getId(),floor.getId(), zone.getId(), startSeat.getId(), endSeat.getId(),space.getStartDate(),space.getEndDate());
+        return new SpaceResponse(space.getId(),floor.getId(), zone.getId(), startSeat.getId(), endSeat.getId(),space.getAssignedOeCodeId().getId(),space.getStartDate(),space.getEndDate());
     }
 }

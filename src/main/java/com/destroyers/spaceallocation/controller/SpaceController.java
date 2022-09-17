@@ -41,9 +41,9 @@ public class SpaceController {
     }
 
     @PutMapping("/{spaceId}")
-    public void editSpace(@RequestBody EditSpaceRequest request,
-                            @PathVariable Long spaceId,
-                            @RequestParam String pid){
-        spaceService.editSpace(request,spaceId,pid);
+    public SpaceResponse editSpace(@RequestBody EditSpaceRequest request,
+                                   @PathVariable Long spaceId,
+                                   @RequestParam String pid){
+        return spaceService.editSpace(request,spaceId,pid);
     }
 }
