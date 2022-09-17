@@ -11,9 +11,9 @@ import java.util.List;
 @Data
 public class AllocateSpaceRequest {
 
-    private String buildingId;
-    private String departmentId;
+    private Long buildingId;
+    private Long departmentId;
     private List<FloorRequest> floorRequests;
-    private String oeCode;
+    private Long oeCodeId;
 
 }

@@ -12,13 +12,15 @@ import java.util.Optional;
 @Data
 @AllArgsConstructor
 public class DepartmentResponse {
-    private String name;
-    private String oeCode;
+    private Long departmentId;
+    private String departmentName;
+    private Long oeCodeId;
+    private String oeCodeName;
     private Integer totalEmployees;
 
     public static DepartmentResponse from(Department department, Optional<OECode> highLevelOECode) {
         return highLevelOECode
-                .map( oeCode -> new DepartmentResponse(department.getName(), oeCode.getName(), oeCode.getTotalEmployees()))
+                .map( oeCode -> new DepartmentResponse(department.getId(), department.getName(), oeCode.getId(), oeCode.getName(), oeCode.getTotalEmployees()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "High level OE code is not mapped to department"));
     }
 

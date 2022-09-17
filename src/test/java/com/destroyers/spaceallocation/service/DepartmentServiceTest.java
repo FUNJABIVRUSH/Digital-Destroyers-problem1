@@ -58,7 +58,7 @@ class DepartmentServiceTest {
 
             assertThat(departments).hasSize(1);
             assertThat(departments).contains(new DepartmentResponse(
-                    "Private Banking", highLevelOECode.getName(), 110
+                    department.getId(), "Private Banking", highLevelOECode.getId(), highLevelOECode.getName(), 110
             ));
         }
     }
