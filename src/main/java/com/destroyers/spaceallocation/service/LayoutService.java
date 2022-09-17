@@ -3,7 +3,7 @@ package com.destroyers.spaceallocation.service;
 import com.destroyers.spaceallocation.model.space.SpaceQueryResponse;
 import com.destroyers.spaceallocation.model.space.response.FloorResponse;
 import com.destroyers.spaceallocation.model.space.response.SeatResponse;
-import com.destroyers.spaceallocation.model.space.response.SpaceResponse;
+import com.destroyers.spaceallocation.model.space.response.LayoutResponse;
 import com.destroyers.spaceallocation.model.space.response.ZoneResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,12 +14,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class SpaceService {
+public class LayoutService {
 
     @Autowired
     private EntityManager entityManager;
 
-    public SpaceResponse getSpaceDetails(Long buildingId){
+    public LayoutResponse getLayout(Long buildingId){
 
         List<SpaceQueryResponse> spaceQueryResponses = entityManager.createNativeQuery("select  building.name as buildingName, floor.id as floorId, floor.name as floorName, zone.id as zoneId, zone.name as zoneName, seat.id as seatId, seat.number as seatNumber, seat.type as seatType, seat.is_reserved as isReserved\n" +
                         "from building join floor on building.id = floor.building_id join zone on zone.floor_id = floor.id join seat on seat.zone_id = zone.id\n" +
@@ -27,11 +27,11 @@ public class SpaceService {
                 .setParameter(1, buildingId)
                 .getResultList();
 
-        return getSpaceResponse(spaceQueryResponses);
+        return getLayoutResponse(spaceQueryResponses);
 
     }
 
-    private SpaceResponse getSpaceResponse(List<SpaceQueryResponse> spaceQueryResponses) {
+    private LayoutResponse getLayoutResponse(List<SpaceQueryResponse> spaceQueryResponses) {
         Map<Long, List<SpaceQueryResponse>> spaceResponseByFloorId = spaceQueryResponses.stream()
                 .collect(Collectors.groupingBy(SpaceQueryResponse::getFloorId));
 
@@ -40,7 +40,7 @@ public class SpaceService {
                 .map(this::getFloorResponses)
                 .collect(Collectors.toList());
         SpaceQueryResponse firstSpaceResponse = spaceQueryResponses.get(0);
-        return new SpaceResponse(firstSpaceResponse.getBuildingName(), floorResponses);
+        return new LayoutResponse(firstSpaceResponse.getBuildingName(), floorResponses);
     }
 
     private FloorResponse getFloorResponses(List<SpaceQueryResponse> spaceQueryResponses) {
