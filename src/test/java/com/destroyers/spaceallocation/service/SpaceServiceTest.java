@@ -128,7 +128,7 @@ class SpaceServiceTest {
 
         @Test
         void shouldDeleteSpaceByOECode() {
-            OECode oeCode = new OECode(1L,"MBLD",500,null,null);
+            OECode oeCode = new OECode(1L,"MBLD",500,null,null,null);
             when(oeCodeDao.findById(any())).thenReturn(Optional.of(oeCode));
             when(employeeDao.findByMpid("M123")).thenReturn(Optional.of(new Employee(1L,null,null,null,null,oeCode)));
 
@@ -145,7 +145,7 @@ class SpaceServiceTest {
 
         @Test
         void shouldDeleteSpaceBySpaceIds() {
-            OECode oeCode = new OECode(1L,"MBLD",500,null,null);
+            OECode oeCode = new OECode(1L,"MBLD",500,null,null,null);
             Employee employee = new Employee(1L,null,null,null,null,oeCode);
             when(employeeDao.findByMpid("M123")).thenReturn(Optional.of(employee));
             Space space = new Space(1L,null,employee,oeCode,null,null);
