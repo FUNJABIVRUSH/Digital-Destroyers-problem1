@@ -28,4 +28,8 @@ public class OECode {
     @JoinColumn(name = "department_id", referencedColumnName = "id")
     private Department department;
     private String type;
+
+    @OneToOne
+    @JoinColumn(name = "parent_oe_code_id", referencedColumnName = "id")
+    private OECode parentOECode;
 }

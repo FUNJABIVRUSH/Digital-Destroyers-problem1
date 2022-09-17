@@ -6,6 +6,7 @@ import com.destroyers.spaceallocation.entities.Department;
 import com.destroyers.spaceallocation.entities.Employee;
 import com.destroyers.spaceallocation.entities.OECode;
 import com.destroyers.spaceallocation.model.employee.EmployeeResponse;
+import com.destroyers.spaceallocation.model.oecode.OECodeResponse;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,14 +37,14 @@ class EmployeeServiceTest {
         void shouldReturnAllEmployees() {
             Building building = new Building(1L, "EON2");
             Department department = new Department(1L, "Private Banking", building);
-            OECode oeCode = new OECode(1L, "MBLD1", 100, null, "MID");
+            OECode oeCode = new OECode(1L, "MBLD1", 100, null, "MID", null);
             Employee employee = new Employee(1L, "M12345", "User-1", ADMIN, department, oeCode);
             when(employeeDao.findAll()).thenReturn(List.of(employee));
 
             List<EmployeeResponse> employees = employeeService.getAll();
 
             assertThat(employees).hasSize(1);
-            assertThat(employees).contains(new EmployeeResponse( 1L, "M12345", "User-1", ADMIN, 1L, "MBLD1" ));
+            assertThat(employees).contains(new EmployeeResponse( 1L, "M12345", "User-1", ADMIN, new OECodeResponse(1L, "MBLD1" ), List.of()));
         }
     }
 
@@ -54,13 +55,13 @@ class EmployeeServiceTest {
         void shouldReturnEmployeeByMpid() {
             Building building = new Building(1L, "EON2");
             Department department = new Department(1L, "Private Banking", building);
-            OECode oeCode = new OECode(1L, "MBLD1", 100, null, "MID");
+            OECode oeCode = new OECode(1L, "MBLD1", 100, null, "MID", null);
             Employee employee = new Employee(1L, "M12345", "User-1", ADMIN, department, oeCode);
             when(employeeDao.findByMpid(employee.getMpid())).thenReturn(Optional.of(employee));
 
             EmployeeResponse employeeResponse = employeeService.getByPid(employee.getMpid());
 
-            assertThat(employeeResponse).isEqualTo(new EmployeeResponse(1L, "M12345", "User-1", ADMIN, 1L, "MBLD1"));
+            assertThat(employeeResponse).isEqualTo(new EmployeeResponse(1L, "M12345", "User-1", ADMIN, new OECodeResponse(21L, "MBLD1"), List.of()));
         }
     }
 
