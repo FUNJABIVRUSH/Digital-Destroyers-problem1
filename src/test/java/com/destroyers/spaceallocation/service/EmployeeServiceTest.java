@@ -1,6 +1,7 @@
 package com.destroyers.spaceallocation.service;
 
 import com.destroyers.spaceallocation.dao.EmployeeDao;
+import com.destroyers.spaceallocation.entities.Department;
 import com.destroyers.spaceallocation.entities.Employee;
 import com.destroyers.spaceallocation.model.employee.EmployeeResponse;
 import org.junit.jupiter.api.Nested;
@@ -31,7 +32,8 @@ class EmployeeServiceTest {
 
         @Test
         void shouldReturnAllEmployees() {
-            Employee employee = new Employee(1L, "M12345", "User-1", ADMIN);
+            Department department = new Department(1L, "Private Banking");
+            Employee employee = new Employee(1L, "M12345", "User-1", ADMIN, department);
             when(employeeDao.findAll()).thenReturn(List.of(employee));
 
             List<EmployeeResponse> employees = employeeService.getAll();
@@ -46,7 +48,8 @@ class EmployeeServiceTest {
 
         @Test
         void shouldReturnEmployeeByMpid() {
-            Employee employee = new Employee(1L, "M12345", "User-1", ADMIN);
+            Department department = new Department(1L, "Private Banking");
+            Employee employee = new Employee(1L, "M12345", "User-1", ADMIN, department);
             when(employeeDao.findByMpid(employee.getMpid())).thenReturn(Optional.of(employee));
 
             EmployeeResponse employeeResponse = employeeService.getByPid(employee.getMpid());
