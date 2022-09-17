@@ -35,11 +35,11 @@ public class SpaceService {
     @Autowired
     private OECodeDao oeCodeDao;
 
-    public List<SpaceResponse> getSpaceAllocatedTo(Long buildingId, String pid) {
+    public List<SpaceResponse> getSpaceAllocatedTo(String pid) {
         Employee employee = getEmployee(pid);
         OECode oeCode = employee.getOeCode();
         return seatRangeDao.findAllByOeCodeId(oeCode.getId()).stream()
-                .map(seatRange -> SpaceResponse.from(buildingId, seatRange))
+                .map(SpaceResponse::from)
                 .collect(Collectors.toList());
     }
 
@@ -87,10 +87,7 @@ public class SpaceService {
     public List<SpaceResponse> getSpaceReservedBy(String pid) {
         Employee employee = getEmployee(pid);
         return seatRangeDao.findAllByEmployeeId(employee.getId()).stream()
-                .map(seatRange -> {
-                    Long buildingId = seatRange.getStartSeat().getZone().getFloor().getBuilding().getId();
-                   return SpaceResponse.from(buildingId, seatRange);
-                })
+                .map(SpaceResponse::from)
                 .collect(Collectors.toList());
     }
 }

@@ -14,17 +14,16 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class SpaceResponse {
-    private Long buildingId;
     private Long floorId;
     private Long zoneId;
     private Long startSeatId;
     private Long endSeatId;
 
-    public static SpaceResponse from(Long buildingId, SeatRange seatRange) {
+    public static SpaceResponse from(SeatRange seatRange) {
         Seat startSeat = seatRange.getStartSeat();
         Seat endSeat = seatRange.getEndSeat();
         Zone zone = startSeat.getZone();
         Floor floor = zone.getFloor();
-        return new SpaceResponse(buildingId, floor.getId(), zone.getId(), startSeat.getId(), endSeat.getId());
+        return new SpaceResponse(floor.getId(), zone.getId(), startSeat.getId(), endSeat.getId());
     }
 }

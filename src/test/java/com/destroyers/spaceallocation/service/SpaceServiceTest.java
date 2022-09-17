@@ -77,7 +77,7 @@ class SpaceServiceTest {
             String pid = "M12345";
             Employee employee = mock(Employee.class);
             OECode oeCode = new OECode(1L, "MBLD1", 100, null, "LOW");
-            Floor floor = new Floor(1L, "1", new Building(1L, "EON2") );
+            Floor floor = new Floor(1L, "1", new Building(1L, "EON2"));
             Zone zone = new Zone(1L, "A", floor);
             Seat startSeat = new Seat(1L, "1", zone, "WINDOW", false);
             Seat endSeat = new Seat(10L, "10", zone, "NON_WINDOW", false);
@@ -88,9 +88,9 @@ class SpaceServiceTest {
             when(employee.getOeCode()).thenReturn(oeCode);
             when(seatRangeDao.findAllByOeCodeId(1L)).thenReturn(List.of(seatRange));
 
-            List<SpaceResponse> spaceResponses = spaceService.getSpaceAllocatedTo(1L, pid);
+            List<SpaceResponse> spaceResponses = spaceService.getSpaceAllocatedTo(pid);
 
-            assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse(1L, 1L, 1L, 1L, 10L)));
+            assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse(1L, 1L, 1L, 10L)));
         }
     }
 
@@ -115,7 +115,7 @@ class SpaceServiceTest {
 
             List<SpaceResponse> spaceResponses = spaceService.getSpaceReservedBy(pid);
 
-            assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse(1L, 1L, 1L, 1L, 10L)));
+            assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse( 1L, 1L, 1L, 10L)));
         }
     }
 

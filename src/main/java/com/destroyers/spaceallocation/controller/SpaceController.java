@@ -23,9 +23,8 @@ public class SpaceController {
     }
 
     @GetMapping("/allocated")
-    public List<SpaceResponse> getAllocatedSpace(@RequestParam String pid,
-                                                 @RequestParam Long buildingId){
-        return spaceService.getSpaceAllocatedTo(buildingId, pid);
+    public List<SpaceResponse> getAllocatedSpace(@RequestParam String pid){
+        return spaceService.getSpaceAllocatedTo(pid);
     }
 
     @GetMapping("/reserved")

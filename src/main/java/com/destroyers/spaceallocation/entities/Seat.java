@@ -1,9 +1,7 @@
 package com.destroyers.spaceallocation.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
@@ -13,6 +11,8 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Table(name = "seat")
 @Entity
+@EqualsAndHashCode
+@SuperBuilder(toBuilder = true)
 public class Seat {
 
     @Id

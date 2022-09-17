@@ -25,6 +25,9 @@ INSERT INTO oe_code (id, name, total_employees, department_id, type) VALUES (2, 
 INSERT INTO oe_code (id, name, total_employees, department_id, type) VALUES (3, 'MBLD111', 100, 1, 'LOW');
 
 INSERT INTO employee (id, mpid, name, role, department_id, oe_code_id) VALUES (1, 'M12345', 'User-1', 'ADMIN', 1, 1);
+INSERT INTO employee (id, mpid, name, role, department_id, oe_code_id) VALUES (2, 'M12346', 'User-2', 'MANAGER', 1, 1);
+INSERT INTO employee (id, mpid, name, role, department_id, oe_code_id) VALUES (3, 'M12347', 'User-3', 'EMPLOYEE', 1, 2);
+
 INSERT INTO department_admin (id, employee_id, department_id) VALUES (1, 1, 1);
 
 
