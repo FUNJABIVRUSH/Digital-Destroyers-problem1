@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 
 @RestController
 @RequestMapping("/space")
+@CrossOrigin(origins = "*")
 public class SpaceController {
 
     @GetMapping("{spaceId}")
