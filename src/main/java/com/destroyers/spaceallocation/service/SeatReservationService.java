@@ -26,9 +26,9 @@ import static com.destroyers.spaceallocation.util.DateTimeUtil.afterOrEqual;
 import static com.destroyers.spaceallocation.util.DateTimeUtil.beforeOrEqual;
 
 @Service
-public class SeatService {
+public class SeatReservationService {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(SeatService.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(SeatReservationService.class);
 
     @Autowired
     private SeatDao seatDao;
@@ -40,19 +40,18 @@ public class SeatService {
     private EmployeeDao employeeDao;
 
     public List<Long> reserve(SeatReservationRequest seatReservationRequest) {
-        List<DateTimeRange> dateTimeRanges = seatReservationRequest.getDateTimeRanges();
         List<SeatReservation> seatReservations = seatReservationRequest.getSeatRequests().stream()
-                .flatMap(seatRequest -> getSeatReservations(dateTimeRanges, seatRequest))
+                .flatMap(this::getSeatReservations)
                 .collect(Collectors.toList());
         return seatReservationDao.saveAll(seatReservations).stream()
                 .map(SeatReservation::getId)
                 .collect(Collectors.toList());
     }
 
-    private Stream<SeatReservation> getSeatReservations(List<DateTimeRange> dateTimeRanges, SeatRequest seatRequest) {
+    private Stream<SeatReservation> getSeatReservations(SeatRequest seatRequest) {
         Seat seat = getSeat(seatRequest.getSeatId());
         Employee employee = getEmployee(seatRequest.getPid());
-        return dateTimeRanges
+        return seatRequest.getDateTimeRange()
                 .stream()
                 .peek(dateRange -> checkIfSeatIsReserved(seat.getId(), dateRange))
                 .map(dateRange -> new SeatReservation(null, seat, dateRange.getDate(), dateRange.getStartTime(), dateRange.getEndTime(), employee));
@@ -78,7 +77,7 @@ public class SeatService {
         LocalTime endTime = dateTimeRange.getEndTime();
         List<SeatReservation> reservationsBetween = seatReservationDao.findAllBySeatIdInAndReservationDate(List.of(seatId), dateTimeRange.getDate()).stream()
                 .filter(seatReservation ->
-                        (beforeOrEqual(seatReservation.getStartTime(), startTime) && afterOrEqual(seatReservation.getEndTime(), startTime)) ||
+                        (beforeOrEqual(seatReservation.getStartTime(), startTime) && seatReservation.getEndTime().isAfter(startTime)) ||
                                 (afterOrEqual(seatReservation.getStartTime(), endTime) && beforeOrEqual(seatReservation.getEndTime(), endTime)))
                 .collect(Collectors.toList());
         if( !reservationsBetween.isEmpty()){

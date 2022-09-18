@@ -1,7 +1,7 @@
 package com.destroyers.spaceallocation.controller;
 
 import com.destroyers.spaceallocation.model.seat.request.SeatReservationRequest;
-import com.destroyers.spaceallocation.service.SeatService;
+import com.destroyers.spaceallocation.service.SeatReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,13 +10,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/seat")
 @CrossOrigin(origins = "*")
-public class SeatController {
+public class SeatReservationController {
 
     @Autowired
-    private SeatService seatService;
+    private SeatReservationService seatReservationService;
 
     @PostMapping("/reserve")
     private List<Long> reserveSeat(@RequestBody SeatReservationRequest seatReservationRequest) {
-        return seatService.reserve(seatReservationRequest);
+        return seatReservationService.reserve(seatReservationRequest);
     }
 }
