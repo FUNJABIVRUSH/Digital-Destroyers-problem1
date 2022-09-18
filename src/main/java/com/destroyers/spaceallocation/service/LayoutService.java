@@ -53,7 +53,7 @@ public class LayoutService {
                 .map(spaceQueryResponsesForFloor -> getFloorResponses(spaceQueryResponsesForFloor, reservedSeatIds))
                 .collect(Collectors.toList());
         LayoutQueryResponse firstSpaceResponse = spaceQueryResponses.get(0);
-        return new LayoutResponse(firstSpaceResponse.getBuildingName(), floorResponses);
+        return new LayoutResponse(firstSpaceResponse.getBuildingName(), floorResponses, dateTimeRange);
     }
 
     private FloorResponse getFloorResponses(List<LayoutQueryResponse> spaceQueryResponses, Set<Long> reservedSeatIds) {
