@@ -1,9 +1,8 @@
-import {FlexBox, FlexItem} from 'react-styled-flex';
+import {FlexBox} from 'react-styled-flex';
 import styled from 'styled-components';
 import Select from 'react-select';
-import { FaBlackberry } from 'react-icons/fa';
-import {Tabs} from '../common/tabs';
-import { Checkout } from '../common/Checkout';
+import { Tabs } from '../../common/tabs';
+import { HighLevelContainer } from './HighlevelContainer';
 
 
 const customStyles = {
@@ -18,48 +17,51 @@ const customStyles = {
         color: '#000000',
       },
     }),
-  }
-  
+}
 
-export const AdminView = () => {
 
-    const departments = [
-        { value: 'dept1', label: 'Department 1' },
-        { value: 'dept2', label: 'Department 2' },
-        { value: 'dept3', label: 'Department 3' }
-    ];
 
-    const oeCodes = [
-        { value: 'OE1', label: 'HLOE 1' },
-        { value: 'OE2', label: 'HLOE 2' },
-        { value: 'OE3', label: 'HLOE 3' }
+export const HighLevelView = () => {
+
+    const oeCodes = [];
+
+    const floors = [
+        { value: 'floor1', label: 'Floor 1' },
+        { value: 'floor2', label: 'Floor 2' },
+        { value: 'floor3', label: 'Floor 3' }
     ];
     
 
     return <AdminWrapper padding={'26px 36px 10px'} gap="5%" >
          <FormWrapper gap='10%' height={'100px'}>
-                <FormContainer>
-                    <span>Select Department</span>
+             <FlexBox gap='10%'>
+                 <FormContainer column>
+                    <span>Select OE code</span>
                     <StyledSelect 
-                        placeholder="Select Department..." 
-                        styles={customStyles} 
-                        options={departments} 
-                    />
-                </FormContainer>
-                <FormContainer>
-                    <span>Select OE</span>
-                    <StyledSelect 
-                        placeholder="Select Department..." 
+                        placeholder="Select OE..." 
                         styles={customStyles} 
                         options={oeCodes} 
                     />
                 </FormContainer>
+                <FormContainer column>
+                    <span>Select Floor</span>
+                    <StyledSelect 
+                        placeholder="Select Floor..." 
+                        styles={customStyles} 
+                        options={floors} 
+                    />
+                </FormContainer>
+             </FlexBox>
+             <FlexBox>
+                <StyledButton>Allot Space</StyledButton>
+             </FlexBox>
+                
             </FormWrapper>
 
         <Shadow height={'100%'}>
-                <Checkout />
-                <Tabs />
-            </Shadow>
+                {/* <Checkout /> */}
+                <Tabs container={ HighLevelContainer} />
+        </Shadow>
 
     </AdminWrapper>
 }
@@ -68,10 +70,19 @@ const FormWrapper = styled(FlexBox)`
     height: 100px;
     background: #DCDCDC;
     padding: 26px 36px 10px;
-    justify-content: center;
+    justify-content: space-between;
     margin: -26px -36px -10px;
-    
+    align-items: center;
 `;
+
+const StyledButton = styled.button`
+    background: #000000;
+    color: #FFFFFF;
+    border: 0;
+    border-radius: 0;
+    width: 150px;
+    height: 40px;
+`
 
 const FormContainer = styled(FlexBox)`
     flex-direction: column;
@@ -93,30 +104,6 @@ const Shadow = styled(FlexBox)`
     box-shadow: 0 0 16px rgb( 0 0 0 / 10%)
 `;
 
-
-const Tab = styled.button`
-    color: rgb(124,124,123);
-    background: none;
-    width: 100px;
-    height: 100%;
-    font-weight: bold;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 14px;
-    cursor: pointer;
-    ${
-        ({active}) =>( active && `
-            color: black;
-            border-bottom: 3px solid black;
-        `)
-    }
-
-
-`;
 
 const StyledSelect = styled(Select)`
     .css-1s2u09g-control{
