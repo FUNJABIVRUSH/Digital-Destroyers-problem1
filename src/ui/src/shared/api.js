@@ -41,6 +41,16 @@ export const getLayout = (empPID) => {
         });
 }
 
+export const getReservedSeats = (empPID) => {
+    return fetch(`${BASE_URL}/space/reserved?pid=${empPID}`)
+        .then(async (response) => {
+            return await response.json();
+        })
+        .catch((error) => {
+            return Promise.reject(error);
+        });
+}
+
 export const getAllocate = (empPID) => {
     return fetch(`${BASE_URL}/space/allocated?pid=${empPID}`)
         .then(async (response) => {
@@ -57,15 +67,15 @@ export const allocate = (empPID, data) => {
         headers: {
             'Content-Type': 'application/json'
             // 'Content-Type': 'application/x-www-form-urlencoded',
-          },
+        },
         body: JSON.stringify(data),
     })
-    .then(async (response) => {
-        return await response.json();
-    })
-    .catch((error) => {
-        return Promise.reject(error);
-    });
+        .then(async (response) => {
+            return await response.json();
+        })
+        .catch((error) => {
+            return Promise.reject(error);
+        });
 }
 
 export const getReserved = (empPID) => {

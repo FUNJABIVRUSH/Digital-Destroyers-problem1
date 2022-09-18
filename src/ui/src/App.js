@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import GlobalStyles from './GlobalStyles';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
-const Context = React.createContext();
+export const Context = React.createContext();
 
 export const useAppContext = () => useContext(Context);
 

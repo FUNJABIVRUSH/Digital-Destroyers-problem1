@@ -1,29 +1,30 @@
-import {FlexBox} from 'react-styled-flex';
+import { FlexBox } from 'react-styled-flex';
 import styled from 'styled-components';
 import Select from 'react-select';
 import { HighLevelContainer } from './HighlevelContainer';
 import { Tabs } from '../../common/tabs';
-import {useIsFetching, useIsMutating, useMutation, useQuery} from 'react-query';
-import { getDepartments, getEmployeeByPID, getLayout, allocate, getAllocate } from '../../shared/api';
+import { useIsFetching, useIsMutating, useMutation, useQuery } from 'react-query';
+import { getDepartments, getEmployeeByPID, getLayout, allocate, getAllocate, getReservedSeats } from '../../shared/api';
 import { useEffect, useState, useTransition } from 'react';
-import {Checkout} from '../../common/Checkout';
+import { Checkout } from '../../common/Checkout';
 import { useAppContext } from '../../App';
 import { Loader } from '../../common/Loader';
 import { RequesterView } from '../RequesterView/RequesterView';
 import { SelfAssign } from '../../common/assignLink';
+import { SeatChart } from '../../shared/seat-chart/seatChart';
 
 
 const customStyles = {
-    option: (provided, {isSelected}) => ({
-      ...provided,
-      padding: 20,
-      background: isSelected  && '#000000',
-      color: isSelected && '#FFFFFF',
-      fontWeight: isSelected && 'bold',
-      '&:hover': {
-        background: '#DCDCDC',
-        color: '#000000',
-      },
+    option: (provided, { isSelected }) => ({
+        ...provided,
+        padding: 20,
+        background: isSelected && '#000000',
+        color: isSelected && '#FFFFFF',
+        fontWeight: isSelected && 'bold',
+        '&:hover': {
+            background: '#DCDCDC',
+            color: '#000000',
+        },
     }),
 }
 
@@ -40,17 +41,18 @@ export const HighLevelView = () => {
 
     const [departmentData, setDepartmentData] = useState([]);
     const [departments, setDepartments] = useState([]);
-    const [layoutData , setLayoutData] = useState([]);
+    const [layoutData, setLayoutData] = useState([]);
     const [selectedDept, setSelectedDept] = useState(null);
     const [empCount, setEmpCount] = useState(0);
     const [oeCodes, setOECodes] = useState([]);
     const [selectedOe, setSelectedOe] = useState(null);
-    const [empData, setEmpData]= useState({});
+    const [empData, setEmpData] = useState({});
 
     const [maxPercent, setMaxPercent] = useState(65);
 
-    const [seatCounter, setSeatCounter ] = useState(0);
-    
+    const [seatCounter, setSeatCounter] = useState(0);
+    const [allocatedSpace, setAllocatedSpace] = useState({});
+
     const [layoutSelection, setLayoutSelection] = useState({
         oeCodeId: '',
         preference: {},
@@ -59,8 +61,8 @@ export const HighLevelView = () => {
 
     useEffect(() => {
         const oEs = [];
-        if(userData.childOECodes?.length ) {
-            userData.childOECodes.forEach(({id, name}) => oEs.push({value: id, label: name}));
+        if (userData.childOECodes?.length) {
+            userData.childOECodes.forEach(({ id, name }) => oEs.push({ value: id, label: name }));
         }
         setOECodes(oEs);
     }, [userData])
@@ -68,24 +70,34 @@ export const HighLevelView = () => {
     useQuery('fetchLayoutDetails', () => getLayout(userData.mpid), {
         onSuccess: (layoutData) => {
             setMaxPercent(layoutData.maxSeatAllocationPercent);
-            if(layoutData && layoutData.floors &&  layoutData.floors.length) {
+            if (layoutData && layoutData.floors && layoutData.floors.length) {
                 setLayoutData(layoutData.floors);
             }
         }
     });
 
-    const {refetch} = useQuery('fetchAllocatedDetails', () => getAllocate(userData.mpid), {
+    useQuery('fetchReservedSpaceDetails', () => getReservedSeats(userData.mpid), {
+        onSuccess: (reservedSeats) => {
+            const reservedSpace = reservedSeats.map((seat) => {
+                seat.isAlreadyReserved = true;
+                return seat;
+            });
+            setAllocatedSpace(reservedSpace);
+        }
+    });
+
+    const { refetch } = useQuery('fetchAllocatedDetails', () => getAllocate(userData.mpid), {
         onSuccess: (data) => {
-            console.log(data);
+            setAllocatedSpace(data);
         }
     });
 
     const onChangeOE = (value) => {
         setSelectedOe(value);
-        setLayoutSelection({...layoutSelection, oeCodeId: value.value })
+        setLayoutSelection({ ...layoutSelection, oeCodeId: value.value })
     }
 
-    const addFloorRequest = ({startSeat, endSeat, floor, zone, startSeatNum, endSeatNum}) => {
+    const addFloorRequest = ({ startSeat, endSeat, floor, zone, startSeatNum, endSeatNum }) => {
         const floorSet = {
             "endSeatId": endSeat,
             "startSeatId": startSeat,
@@ -93,10 +105,10 @@ export const HighLevelView = () => {
         const currCount = seatCounter;
         const tempCount = (Number(endSeatNum) - Number(startSeatNum)) + 1;
         setSeatCounter(currCount + tempCount);
-        const tmpLayourSelPref = {...layoutSelection.preference}; 
-        layoutData.forEach(({floorId, floorName}) => {
-            if(floorId === floor) {
-                if(tmpLayourSelPref.hasOwnProperty(floorId)) {
+        const tmpLayourSelPref = { ...layoutSelection.preference };
+        layoutData.forEach(({ floorId, floorName }) => {
+            if (floorId === floor) {
+                if (tmpLayourSelPref.hasOwnProperty(floorId)) {
                     tmpLayourSelPref[floorId].push({
                         floorName: floorName,
                         zone,
@@ -112,10 +124,10 @@ export const HighLevelView = () => {
                     }]
                 }
             }
-            
+
         });
         const floorRequests = [...layoutSelection.floorRequests, floorSet];
-        setLayoutSelection({...layoutSelection, floorRequests, preference: tmpLayourSelPref});
+        setLayoutSelection({ ...layoutSelection, floorRequests, preference: tmpLayourSelPref });
     }
 
     const getFooterData = () => {
@@ -123,16 +135,16 @@ export const HighLevelView = () => {
             {
                 [...Object.keys(layoutSelection.preference)].map((key, i) => {
                     const objs = layoutSelection.preference[key];
-                    return objs.map((obj, index, arr) =>  <span key={index}>{obj.floorName}: {obj.zone} {obj.startSeatNum} - {obj.zone} {obj.endSeatNum} {index + 1  < arr.length ? ' | ' : ''}</span> )
-                    
+                    return objs.map((obj, index, arr) => <span key={index}>{obj.floorName}: {obj.zone} {obj.startSeatNum} - {obj.zone} {obj.endSeatNum} {index + 1 < arr.length ? ' | ' : ''}</span>)
+
                 })
             }
         </SubText>
     }
 
-    const allocateSpace = useMutation((event) =>{
+    const allocateSpace = useMutation((event) => {
         event.preventDefault();
-        return allocate(userData.mpid,{oeCodeId: layoutSelection.oeCodeId,floorRequests: layoutSelection.floorRequests })
+        return allocate(userData.mpid, { oeCodeId: layoutSelection.oeCodeId, floorRequests: layoutSelection.floorRequests })
     }, {
         onSuccess: (data) => {
             refetch();
@@ -146,67 +158,68 @@ export const HighLevelView = () => {
             floorRequests: [],
         });
     }
-    
+
 
     const getEmployee = () => {
-        const {totalEmployees} = userData.childOECodes.find(({id}) => id === selectedOe.value);
+        const { totalEmployees } = userData.childOECodes.find(({ id }) => id === selectedOe.value);
         return totalEmployees;
     }
 
 
     return !!(isFetching || isMutating) ? <Loader /> : <>
-    <AdminWrapper padding={'26px 36px 10px'} gap="5%" >
-         <FormWrapper gap='10%' height={'100px'}>
-             <FlexBox gap='10%'>
-                <FormContainer column>
-                    <span>Select OE</span>
-                    <StyledSelect 
-                        placeholder="Select OE..." 
-                        styles={customStyles} 
-                        options={oeCodes}
-                        onChange={onChangeOE}
-                        value={selectedOe}   
-                    />
-                </FormContainer>
-             </FlexBox>
-             <SelfAssign />
+        <AdminWrapper padding={'26px 36px 10px'} gap="5%" >
+            <FormWrapper gap='10%' height={'100px'}>
+                <FlexBox gap='10%'>
+                    <FormContainer column>
+                        <span>Select OE</span>
+                        <StyledSelect
+                            placeholder="Select OE..."
+                            styles={customStyles}
+                            options={oeCodes}
+                            onChange={onChangeOE}
+                            value={selectedOe}
+                        />
+                    </FormContainer>
+                </FlexBox>
+                <SelfAssign />
             </FormWrapper>
 
-       {!!selectedOe && <Shadow column height={'100%'}>
-                <Checkout 
+            {!!selectedOe && <Shadow column height={'100%'}>
+                <Checkout
                     departmentName={userData.departmentName}
                     oECode={selectedOe.label}
                     employees={getEmployee()}
                     maxPercent={maxPercent}
                     seatCounter={seatCounter}
                 />
-                <Tabs onSelection={addFloorRequest} floorData={layoutData} employees={getEmployee()} container={HighLevelContainer} 
-                maxPercent={maxPercent}
-                seatCounter={seatCounter}/>
-        </Shadow>}
-        
-    </AdminWrapper>
-    {!!layoutSelection?.floorRequests?.length && <Footer>
-        <FlexBox>
-            <SubTitle>Selected Spaces:</SubTitle>
-            {getFooterData()}
-        </FlexBox>
-        <FlexBox position='end' gap={'20px'}>
+                <Tabs onSelection={addFloorRequest} floorData={layoutData} employees={getEmployee()} container={HighLevelContainer}
+                    maxPercent={maxPercent}
+                    seatCounter={seatCounter}
+                    allocatedSpace={allocatedSpace} />
+            </Shadow>}
+
+        </AdminWrapper>
+        {!!layoutSelection?.floorRequests?.length && <Footer>
+            <FlexBox>
+                <SubTitle>Selected Spaces:</SubTitle>
+                {getFooterData()}
+            </FlexBox>
+            <FlexBox position='end' gap={'20px'}>
                 <StyledButton variant='secondary' onClick={onClearSelection}>Clear Selection </StyledButton>
                 <StyledButton onClick={allocateSpace.mutate}>Allot Space</StyledButton>
-        </FlexBox>
-    </Footer>}
+            </FlexBox>
+        </Footer>}
     </>
 }
 
 
 
 const SubTitle = styled(FlexBox)`
-    text-align: ${({center}) => center ? 'center' : 'left'};
+    text-align: ${({ center }) => center ? 'center' : 'left'};
     font-weight: 500;
-    font-size:${({large}) => large ? '18px;' : '16px;'}; 
+    font-size:${({ large }) => large ? '18px;' : '16px;'}; 
     color: #000000;
-     ${({center}) => center && 'align-items: center' };
+     ${({ center }) => center && 'align-items: center'};
      margin-left: 30px;
      margin-right: 5px;
 `;
@@ -230,9 +243,9 @@ const FormWrapper = styled(FlexBox)`
 
 const StyledButton = styled.button`
     border: 0;
-    background: ${({variant}) => (variant && variant === 'secondary' )? '#FFFFFF' : '#000000' };
-    color: ${({variant}) =>  (variant && variant === 'secondary' ) ? '#000000' : '#FFFFFF' };
-    ${({variant}) =>  (variant && variant === 'secondary' ) && 'border-color: #000000; border: 1px solid' };
+    background: ${({ variant }) => (variant && variant === 'secondary') ? '#FFFFFF' : '#000000'};
+    color: ${({ variant }) => (variant && variant === 'secondary') ? '#000000' : '#FFFFFF'};
+    ${({ variant }) => (variant && variant === 'secondary') && 'border-color: #000000; border: 1px solid'};
     border-radius: 0;
     width: 150px;
     height: 40px;
@@ -260,17 +273,17 @@ const Shadow = styled(FlexBox)`
 
 const StyledSelect = styled(Select)`
     .css-1s2u09g-control{
-        min-width: ${({width}) => width || '18rem' };
-        max-width: ${({width}) => width || '18rem' };
+        min-width: ${({ width }) => width || '18rem'};
+        max-width: ${({ width }) => width || '18rem'};
     }
     .css-1pahdxg-control{
-        min-width: ${({width}) => width || '18rem' };
-        max-width: ${({width}) => width || '18rem' };
+        min-width: ${({ width }) => width || '18rem'};
+        max-width: ${({ width }) => width || '18rem'};
         z-index:9;
     }
     .css-2613qy-menu{
-        min-width: ${({width}) => width || '18rem' };
-        max-width: ${({width}) => width || '18rem' };
+        min-width: ${({ width }) => width || '18rem'};
+        max-width: ${({ width }) => width || '18rem'};
     }
 
 `

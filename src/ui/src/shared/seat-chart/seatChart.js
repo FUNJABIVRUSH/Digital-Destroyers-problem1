@@ -281,75 +281,50 @@ const spaceInfo = {
     ]
 }
 
-export const SeatChart = () => {
+export const SeatChart = ({ spaceInfo, selectedFloor, allocatedSpace }) => {
 
     const [selectedSeat, selectSeat] = useState({ seatName: '1', zoneName: 'zone-A' });
     const [checkedSwitch, setCheckedSwitch] = useState(false);
     const [value, setValue] = useState([null, null]);
-    const [shift, setShift] = React.useState('Morning');
 
-    const handleChange = (event) => {
-        setShift(event.target.value);
-    };
+    let layoutSpaceArray = [...spaceInfo];
+    let layoutSpace = [];
 
+    allocatedSpace && allocatedSpace.length && allocatedSpace.map((space) => {
+        layoutSpaceArray.map((layout, index) => {
+            if (space.floorId === layout.floorId) {
+                layout.zones.map((zone, zoneIndex) => {
+                    if (zone.zoneId === space.zoneId) {
+                        zone.seats.map((seat, seatIndex) => {
+                            if ((seat.seatId >= space.startSeatId && seat.seatId <= space.endSeatId) || seat.seatId === space.startSeatId) {
+                                layoutSpaceArray[index].zones[zoneIndex].seats[seatIndex].isBooked = true;
+                                if (space.isAlreadyReserved) {
+                                    layoutSpaceArray[index].zones[zoneIndex].seats[seatIndex].isAlreadyReserved = true;
+                                } else {
+                                    layoutSpaceArray[index].zones[zoneIndex].seats[seatIndex].isAlreadyReserved = false;
+                                }
+                            }
+                            else {
+                                layoutSpaceArray[index].zones[zoneIndex].seats[seatIndex].isBooked = false;
+                                if (space.isAlreadyReserved) {
+                                    layoutSpaceArray[index].zones[zoneIndex].seats[seatIndex].isAlreadyReserved = true;
+                                } else {
+                                    layoutSpaceArray[index].zones[zoneIndex].seats[seatIndex].isAlreadyReserved = false;
+                                }
+                            }
+                        })
+                    }
+                })
+            }
+        });
+    });
 
-    return <StyledLoginContainer>
-        {/* <StyledDivToggle>
-            <Switch checked={checkedSwitch} onChange={() => setCheckedSwitch(!checkedSwitch)} />
-            <StyledPText>{checkedSwitch ? 'Book for yourself!' : 'Book for your Colleague!'}</StyledPText>
-        </StyledDivToggle>
-        <StyledDiv>
-            <StyledDateRangeText>Please Select Date Range:</StyledDateRangeText>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateRangePicker
-                    label="Advanced keyboard"
-                    value={value}
-                    onChange={(newValue) => setValue(newValue)}
-                    renderInput={(startProps, endProps) => (
-                        <React.Fragment>
-                            <input ref={startProps.inputRef} {...startProps.inputProps} />
-                            <Box sx={{ mx: 1 }}> to </Box>
-                            <input ref={endProps.inputRef} {...endProps.inputProps} />
-                        </React.Fragment>
-                    )}
-                />
-            </LocalizationProvider>
-        </StyledDiv> */}
-        {/* <StyledDivShift>
-            <StyledShiftText>Please Select Shift Timing:</StyledShiftText>
-            <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel id="demo-select-small">Shift</InputLabel>
-                <Select
-                    labelId="demo-select-small"
-                    id="demo-select-small"
-                    value={shift}
-                    label="Shift"
-                    onChange={handleChange}
-                >
-                    <MenuItem value={'Morning'}>Morning</MenuItem>
-                    <MenuItem value={'Evening'}>Evening</MenuItem>
-                </Select>
-            </FormControl>
-        </StyledDivShift> */}
-        <StyledPaper elevation={3}>
-            {/* <StyledDivSearch>
-                <Paper
-                    component="form"
-                    sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
-                >
-                    <InputBase
-                        sx={{ ml: 1, flex: 1 }}
-                        placeholder="Find your Colleague!"
-                        inputProps={{ 'aria-label': 'search google maps' }}
-                    />
-                    <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
-                        <FaSearchengin />
-                    </IconButton>
+    return <StyledPaper elevation={3}>
+        {
+            layoutSpaceArray && layoutSpaceArray.length && layoutSpaceArray.map((floor) => {
+                console.log('floor', layoutSpaceArray)
+                if (selectedFloor == floor.floorName) {
 
-                </Paper>
-            </StyledDivSearch> */}
-            {
-                spaceInfo && spaceInfo.floors.length && spaceInfo.floors.map((floor) => {
                     return floor.zones.length && floor.zones.map((zone) => {
                         return <>
                             <StylesSubDiv>{`${floor.floorName}/${zone.zoneName}`}</StylesSubDiv>
@@ -357,15 +332,16 @@ export const SeatChart = () => {
                                 <tbody>
                                     <tr>
                                         {zone && zone.seats.length && zone.seats.map((seat, i) => {
+                                            console.log('seat', seat)
                                             if (i < 10)
-                                                return <StyledTd><Button variant={`${(selectedSeat.seatName === seat.seatName && selectedSeat.zoneName === zone.zoneName) || seat.isReserved ? 'contained' : 'outlined'}`} onClick={() => selectSeat({ seatName: seat.seatName, zoneName: zone.zoneName })} disabled={seat.isReserved}>{seat.seatName}</Button></StyledTd>
+                                                return <StyledTd><Button variant={`${(selectedSeat.seatName === seat.seatNumber && selectedSeat.zoneName === zone.zoneName) || seat.isBooked || seat.isAlreadyReserved ? 'contained' : 'outlined'}`} onClick={() => selectSeat({ seatName: seat.seatNumber, zoneName: zone.zoneName })} disabled={seat.isReserved || seat.isAlreadyReserved}>{seat.seatNumber}</Button></StyledTd>
 
                                         })}
                                     </tr>
                                     <tr>
                                         {zone && zone.seats.length && zone.seats.map((seat, i) => {
                                             if (i > 9)
-                                                return <StyledTd><Button variant={`${(selectedSeat.seatName === seat.seatName && selectedSeat.zoneName === zone.zoneName) || seat.isReserved ? 'contained' : 'outlined'}`} onClick={() => selectSeat({ seatName: seat.seatName, zoneName: zone.zoneName })} disabled={seat.isReserved}>{seat.seatName}</Button></StyledTd>
+                                                return <StyledTd><Button variant={`${(selectedSeat.seatName === seat.seatNumber && selectedSeat.zoneName === zone.zoneName) || seat.isBooked || seat.isAlreadyReserved ? 'contained' : 'outlined'}`} onClick={() => selectSeat({ seatName: seat.seatNumber, zoneName: zone.zoneName })} disabled={seat.isReserved || seat.isAlreadyReserved}>{seat.seatNumber}</Button></StyledTd>
 
                                         })}
                                     </tr>
@@ -373,38 +349,35 @@ export const SeatChart = () => {
                             </StyledTable>
                         </>
                     })
+                }
 
-                })
-            }
-            <StyledImage src={window} />
-            <StyledSpan>Window here!</StyledSpan>
-            <StyledLegendsDiv>
-                <tr>
-                    <StyledTd><Button variant="contained" disabled>B</Button><StyledLegendText>Booked</StyledLegendText></StyledTd>
-                    <StyledTd><Button variant="outlined">A</Button><StyledLegendText>Available</StyledLegendText></StyledTd>
-                    <StyledTd><Button variant="contained">S</Button><StyledLegendText>Selected</StyledLegendText></StyledTd>
-                </tr>
-            </StyledLegendsDiv>
-            <Button variant="contained" color="success" onClick={() => console.log('hi')} >Book Seat!</Button>
-        </StyledPaper>
-    </StyledLoginContainer>
+            })
+        }
+        <StyledImage src={window} />
+        <StyledSpan>Window here!</StyledSpan>
+        <StyledLegendsDiv>
+            <tr>
+                <StyledTd><Button variant="contained" disabled>B</Button><StyledLegendText>Booked</StyledLegendText></StyledTd>
+                <StyledTd><Button variant="outlined">A</Button><StyledLegendText>Available</StyledLegendText></StyledTd>
+                <StyledTd><Button variant="contained">S</Button><StyledLegendText>Selected</StyledLegendText></StyledTd>
+            </tr>
+        </StyledLegendsDiv>
+    </StyledPaper>
 }
 
 const StyledLoginContainer = styled(FlexBox)`
-align-items: center;
 overflow:scroll;
-justify-content: center;
 flex: 1;
 display: flex;
 flex-direction:column;
-padding: 50px 30px;
+padding: 15px 15px;
 background: #fafafa;
 width: 100%;
+max-height: 80%;
 `
 
 const StyledSpan = styled.span`
 text-align:center;
-margin-top:2rem;
 `
 
 const StyledTable = styled.table`
@@ -434,9 +407,8 @@ const StyledPaper = styled(Paper)`
 flex: 1;
 display: flex;
 flex-direction: column;
-margin: 3rem;
-padding: 3rem;
 background-color: #fafafa;
+padding:1rem;
 `;
 
 const StyledInput = styled.input`
@@ -444,7 +416,6 @@ height: 30px;
 `
 const StyledLegendsDiv = styled.div`
 align-self:center;
-margin-top: 6rem;
 padding: 0.5rem;
 background:white
 `

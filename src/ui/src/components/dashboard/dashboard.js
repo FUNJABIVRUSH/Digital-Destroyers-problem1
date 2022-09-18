@@ -12,8 +12,6 @@ export const Dashboard = ({self}) => {
 
     const [userData, setUserData] = useAppContext();
 
-    console.log(userData);
-
     const getView = () => {
         switch (userData.role) {
             case 'ADMIN':

@@ -1,27 +1,28 @@
-import {FlexBox} from 'react-styled-flex';
+import { FlexBox } from 'react-styled-flex';
 import styled from 'styled-components';
 import Select from 'react-select';
 import { RequesterContainer } from './RequesterViewContainer';
 import { Tabs } from '../../common/tabs';
-import {useIsFetching, useIsMutating, useQuery} from 'react-query';
-import { getAllocate, getDepartments, getLayout } from '../../shared/api';
+import { useIsFetching, useIsMutating, useQuery } from 'react-query';
+import { getAllocate, getDepartments, getLayout, getReservedSeats } from '../../shared/api';
 import { useState, useTransition } from 'react';
-import {Checkout} from '../../common/Checkout';
+import { Checkout } from '../../common/Checkout';
 import { useAppContext } from '../../App';
 import { Loader } from '../../common/Loader';
+import { SeatChart } from '../../shared/seat-chart/seatChart';
 
 
 const customStyles = {
-    option: (provided, {isSelected}) => ({
-      ...provided,
-      padding: 20,
-      background: isSelected  && '#000000',
-      color: isSelected && '#FFFFFF',
-      fontWeight: isSelected && 'bold',
-      '&:hover': {
-        background: '#DCDCDC',
-        color: '#000000',
-      },
+    option: (provided, { isSelected }) => ({
+        ...provided,
+        padding: 20,
+        background: isSelected && '#000000',
+        color: isSelected && '#FFFFFF',
+        fontWeight: isSelected && 'bold',
+        '&:hover': {
+            background: '#DCDCDC',
+            color: '#000000',
+        },
     }),
 }
 
@@ -38,12 +39,12 @@ export const RequesterView = () => {
 
     const [departmentData, setDepartmentData] = useState([]);
     const [departments, setDepartments] = useState([]);
-    const [layoutData , setLayoutData] = useState([]);
+    const [layoutData, setLayoutData] = useState([]);
     const [selectedDept, setSelectedDept] = useState(null);
     const [empCount, setEmpCount] = useState(0);
     const [oeCodes, setOECodes] = useState([]);
     const [selectedOe, setSelectedOe] = useState(null);
-    
+    const [allocatedSpace, setAllocatedSpace] = useState({});
     const [layoutSelection, setLayoutSelection] = useState({
         oeCodeId: '',
         preference: {},
@@ -54,24 +55,34 @@ export const RequesterView = () => {
 
     useQuery('fetchLayoutDetails', () => getLayout(userData.mpid), {
         onSuccess: (layoutData) => {
-            if(layoutData && layoutData.floors &&  layoutData.floors.length) {
+            if (layoutData && layoutData.floors && layoutData.floors.length) {
                 setLayoutData(layoutData.floors);
             }
         }
     });
 
-    const {refetch} = useQuery('fetchAllocatedDetails', () => getAllocate(userData.mpid), {
+    useQuery('fetchReservedSpaceDetails', () => getReservedSeats(userData.mpid), {
+        onSuccess: (reservedSeats) => {
+            const reservedSpace = reservedSeats.map((seat) => {
+                seat.isAlreadyReserved = true;
+                return seat;
+            });
+            setAllocatedSpace(reservedSpace);
+        }
+    });
+
+    const { refetch } = useQuery('fetchAllocatedDetails', () => getAllocate(userData.mpid), {
         onSuccess: (data) => {
-            console.log(data);
+            setAllocatedSpace(data);
         }
     });
 
     const onChangeDepartment = (value) => {
         setSelectedDept(value);
         const oEcode = [];
-        departmentData.forEach(({departmentId, oeCodeName,oeCodeId}) => {
-            if(value.value === departmentId) {
-                oEcode.push({value: oeCodeId,label: oeCodeName});
+        departmentData.forEach(({ departmentId, oeCodeName, oeCodeId }) => {
+            if (value.value === departmentId) {
+                oEcode.push({ value: oeCodeId, label: oeCodeName });
             }
         });
         setOECodes(oEcode);
@@ -79,21 +90,21 @@ export const RequesterView = () => {
 
     const onChangeOE = (value) => {
         setSelectedOe(value);
-        const {totalEmployees} = departmentData.find(({oeCodeId}) => oeCodeId === value.value);
+        const { totalEmployees } = departmentData.find(({ oeCodeId }) => oeCodeId === value.value);
         setEmpCount(totalEmployees);
-        setLayoutSelection({...layoutSelection, oeCodeId: value.value })
+        setLayoutSelection({ ...layoutSelection, oeCodeId: value.value })
     }
 
     // method to add Floor
-    const addFloorRequest = ({startSeat, endSeat, floor, zone, startSeatNum, endSeatNum}) => {
+    const addFloorRequest = ({ startSeat, endSeat, floor, zone, startSeatNum, endSeatNum }) => {
         const floorSet = {
             "endSeatId": endSeat,
             "startSeatId": startSeat,
         }
-        const tmpLayourSelPref = {...layoutSelection.preference}; 
-        layoutData.forEach(({floorId, floorName}) => {
-            if(floorId === floor) {
-                if(tmpLayourSelPref.hasOwnProperty(floorId)) {
+        const tmpLayourSelPref = { ...layoutSelection.preference };
+        layoutData.forEach(({ floorId, floorName }) => {
+            if (floorId === floor) {
+                if (tmpLayourSelPref.hasOwnProperty(floorId)) {
                     tmpLayourSelPref[floorId].push({
                         floorName: floorName,
                         zone,
@@ -109,10 +120,10 @@ export const RequesterView = () => {
                     }]
                 }
             }
-            
+
         });
         const floorRequests = [...layoutSelection.floorRequests, floorSet];
-        setLayoutSelection({...layoutSelection, floorRequests, preference: tmpLayourSelPref});
+        setLayoutSelection({ ...layoutSelection, floorRequests, preference: tmpLayourSelPref });
     }
 
     const getFooterData = () => {
@@ -120,8 +131,8 @@ export const RequesterView = () => {
             {
                 [...Object.keys(layoutSelection.preference)].map((key, i) => {
                     const objs = layoutSelection.preference[key];
-                    return objs.map((obj, index, arr) =>  <span key={index}>{obj.floorName}: {obj.zone} {obj.startSeatNum} - {obj.zone} {obj.endSeatNum} {index + 1  < arr.length ? ' | ' : ''}</span> )
-                    
+                    return objs.map((obj, index, arr) => <span key={index}>{obj.floorName}: {obj.zone} {obj.startSeatNum} - {obj.zone} {obj.endSeatNum} {index + 1 < arr.length ? ' | ' : ''}</span>)
+
                 })
             }
         </SubText>
@@ -135,42 +146,41 @@ export const RequesterView = () => {
         });
     }
 
-  
-    
-    return !!(isFetching || isMutating) ? <Loader /> :<>
-    <AdminWrapper padding={'26px 36px 10px'} gap="5%" >
-        <Shadow column height={'100%'}>
-            {/* Pass dept, OE from context */}
-                <Checkout 
+
+
+    return !!(isFetching || isMutating) ? <Loader /> : <>
+        <AdminWrapper padding={'26px 36px 10px'} gap="5%" >
+            <Shadow column height={'100%'}>
+                {/* Pass dept, OE from context */}
+                <Checkout
                     departmentName={userData.departmentName}
                     oECode={userData.oeCode.name}
                     mpid={`${userData.name} - (${userData.mpid})`}
                 />
-                <Tabs onSelection={addFloorRequest} floorData={layoutData} container={RequesterContainer} />
-    
-        </Shadow>
+                <Tabs onSelection={addFloorRequest} floorData={layoutData} container={RequesterContainer} allocatedSpace={allocatedSpace} />
 
-    </AdminWrapper>
-    {!!layoutSelection?.floorRequests?.length && <Footer>
-        <FlexBox>
-            <SubTitle>Selected Spaces:</SubTitle>
-            {getFooterData()}
-        </FlexBox>
-        <FlexBox position='end' gap={'20px'}>
+            </Shadow>
+        </AdminWrapper>
+        {!!layoutSelection?.floorRequests?.length && <Footer>
+            <FlexBox>
+                <SubTitle>Selected Spaces:</SubTitle>
+                {getFooterData()}
+            </FlexBox>
+            <FlexBox position='end' gap={'20px'}>
                 <StyledButton variant='secondary' onClick={onClearSelection}>Clear Selection </StyledButton>
                 <StyledButton>Allot Space</StyledButton>
-        </FlexBox>
-    </Footer>}
+            </FlexBox>
+        </Footer>}
     </>
 }
 
 
 const SubTitle = styled(FlexBox)`
-    text-align: ${({center}) => center ? 'center' : 'left'};
+    text-align: ${({ center }) => center ? 'center' : 'left'};
     font-weight: 500;
-    font-size:${({large}) => large ? '18px;' : '16px;'}; 
+    font-size:${({ large }) => large ? '18px;' : '16px;'}; 
     color: #000000;
-     ${({center}) => center && 'align-items: center' };
+     ${({ center }) => center && 'align-items: center'};
      margin-left: 30px;
      margin-right: 5px;
 `;
@@ -194,9 +204,9 @@ const FormWrapper = styled(FlexBox)`
 
 const StyledButton = styled.button`
     border: 0;
-    background: ${({variant}) => (variant && variant === 'secondary' )? '#FFFFFF' : '#000000' };
-    color: ${({variant}) =>  (variant && variant === 'secondary' ) ? '#000000' : '#FFFFFF' };
-    ${({variant}) =>  (variant && variant === 'secondary' ) && 'border-color: #000000; border: 1px solid' };
+    background: ${({ variant }) => (variant && variant === 'secondary') ? '#FFFFFF' : '#000000'};
+    color: ${({ variant }) => (variant && variant === 'secondary') ? '#000000' : '#FFFFFF'};
+    ${({ variant }) => (variant && variant === 'secondary') && 'border-color: #000000; border: 1px solid'};
     border-radius: 0;
     width: 150px;
     height: 40px;
@@ -224,17 +234,17 @@ const Shadow = styled(FlexBox)`
 
 const StyledSelect = styled(Select)`
     .css-1s2u09g-control{
-        min-width: ${({width}) => width || '18rem' };
-        max-width: ${({width}) => width || '18rem' };
+        min-width: ${({ width }) => width || '18rem'};
+        max-width: ${({ width }) => width || '18rem'};
     }
     .css-1pahdxg-control{
-        min-width: ${({width}) => width || '18rem' };
-        max-width: ${({width}) => width || '18rem' };
+        min-width: ${({ width }) => width || '18rem'};
+        max-width: ${({ width }) => width || '18rem'};
         z-index:9;
     }
     .css-2613qy-menu{
-        min-width: ${({width}) => width || '18rem' };
-        max-width: ${({width}) => width || '18rem' };
+        min-width: ${({ width }) => width || '18rem'};
+        max-width: ${({ width }) => width || '18rem'};
     }
 
 `
