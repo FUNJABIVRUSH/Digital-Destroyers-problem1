@@ -25,9 +25,9 @@ const customStyles = {
 
 export const Tabs = ({container: Container, onSelection, floorData, employee}) => {
 
-    const [selectedTab, setSelectedTab] = useState(floorData[0].floorId);
+    const [selectedTab, setSelectedTab] = useState(floorData[0]?.floorId);
 
-    const [zones, setZones] = useState(floorData[0].zones);
+    const [zones, setZones] = useState(floorData[0]?.zones);
 
     const onTabChange = (floorId, zones) => {
         setSelectedTab(floorId);

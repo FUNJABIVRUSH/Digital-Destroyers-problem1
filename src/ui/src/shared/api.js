@@ -22,7 +22,7 @@ export const getDepartments = (empPID) => {
 }
 
 export const getLayout = (empPID) => {
-    return fetch(`${BASE_URL}/layout?buildingId=1&pid=M12345`)
+    return fetch(`${BASE_URL}/layout?buildingId=1&pid=M12349`)
         .then(async (response) => {
             return await response.json();
         })

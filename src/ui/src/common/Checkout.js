@@ -11,12 +11,13 @@ export const Checkout = ({departmentName, oECode, employees, mpid}) => {
         <Title>{departmentName}</Title>
         <DetailsWrapper column >
             <SubTitle full >{oECode}</SubTitle>
-            <SubText>{employees}</SubText>
+            {!!employees && <SubText>{employees}</SubText>}
+            {!!mpid && <SubText>{mpid}</SubText>}
         </DetailsWrapper>
-        <DetailsWrapper column>
+        {!!employees && <DetailsWrapper column>
             <SubTitle full >Max Allocable Space for</SubTitle>
             <SubText>{Math.ceil(employees * 65 /100)}</SubText>
-        </DetailsWrapper>
+        </DetailsWrapper>}
     </CheckoutContainer>
 }
 

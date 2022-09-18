@@ -1,7 +1,7 @@
 import {FlexBox} from 'react-styled-flex';
 import styled from 'styled-components';
 import Select from 'react-select';
-import { LowLevelContainer } from './LowLevelContainer';
+import { LowLevelContainer } from './RequesterViewContainer';
 import { Tabs } from '../../common/tabs';
 import {useQuery} from 'react-query';
 import { getDepartments, getLayout } from '../../shared/api';
@@ -40,18 +40,20 @@ export const LowLevelView = () => {
         floorRequests: [],
     });
 
-    useQuery('fetchDeptDetails', getDepartments, {
-        onSuccess: (departmentData) => {
-            const depts = [];
-            if(departmentData && departmentData.length) {
-                setDepartmentData(departmentData);
-                departmentData.forEach(({departmentName, departmentId}) => {
-                    depts.push({value:departmentId, label:departmentName });
-                });
-            }
-            setDepartments(depts);
-        }
-    });
+    // useQuery('fetchDeptDetails', getDepartments, {
+    //     onSuccess: (departmentData) => {
+    //         const depts = [];
+    //         if(departmentData && departmentData.length) {
+    //             setDepartmentData(departmentData);
+    //             departmentData.forEach(({departmentName, departmentId}) => {
+    //                 depts.push({value:departmentId, label:departmentName });
+    //             });
+    //         }
+    //         setDepartments(depts);
+    //     }
+    // });
+
+    // ADD API call for fetching floor data
 
     useQuery('fetchLayoutDetails', getLayout, {
         onSuccess: (layoutData) => {
@@ -79,6 +81,7 @@ export const LowLevelView = () => {
         setLayoutSelection({...layoutSelection, oeCodeId: value.value })
     }
 
+    // method to add Floor
     const addFloorRequest = ({startSeat, endSeat, floor, zone, startSeatNum, endSeatNum}) => {
         const floorSet = {
             "endSeatId": endSeat,
@@ -128,17 +131,21 @@ export const LowLevelView = () => {
             floorRequests: [],
         });
     }
+
+  
     
     return <>
     <AdminWrapper padding={'26px 36px 10px'} gap="5%" >
-        {!!selectedOe && <Shadow column height={'100%'}>
+        <Shadow column height={'100%'}>
+            {/* Pass dept, OE from context */}
                 <Checkout 
-                    departmentName={selectedDept.label}
-                    oECode={selectedOe.label}
-                    employees={empCount}
+                    departmentName={'Test Dept'}
+                    oECode={'Test OE'}
+                    mpid={'MPID'}
                 />
-                <Tabs onSelection={addFloorRequest} floorData={layoutData} employees={empCount} container={LowLevelContainer} />
-        </Shadow>}
+                <Tabs onSelection={addFloorRequest} floorData={layoutData} container={LowLevelContainer} />
+    
+        </Shadow>
 
     </AdminWrapper>
     {!!layoutSelection?.floorRequests?.length && <Footer>
