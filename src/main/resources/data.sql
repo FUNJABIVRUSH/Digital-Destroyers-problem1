@@ -12,7 +12,7 @@ INSERT INTO "ZONE"(id, name, floor_id) VALUES (4, 'B', 2);
 INSERT INTO "ZONE"(id, name, floor_id) VALUES (5, 'A', 3);
 INSERT INTO "ZONE"(id, name, floor_id) VALUES (6, 'B', 3);
 INSERT INTO "ZONE"(id, name, floor_id) VALUES (7, 'A', 4);
-INSERT INTO "ZONE"(id, name, floor_id) VALUES (8, 'B', 5);
+INSERT INTO "ZONE"(id, name, floor_id) VALUES (8, 'B', 4);
 
 
 INSERT INTO seat(id, number, zone_id, type) VALUES (1, '1', 1, 'WINDOW');
