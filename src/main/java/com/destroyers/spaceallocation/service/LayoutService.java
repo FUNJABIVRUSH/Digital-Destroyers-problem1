@@ -32,16 +32,20 @@ public class LayoutService {
     @Autowired
     private final SeatReservationDao seatReservationDao;
 
+    @Autowired
+    private SeatService seatService;
+
     public LayoutService(CustomNativeQueryExecutor layoutDao, SeatReservationDao seatReservationDao) {
         this.nativeQueryExecutor = layoutDao;
         this.seatReservationDao = seatReservationDao;
     }
 
     public LayoutResponse getLayout(Long buildingId, DateTimeRange dateTimeRange) {
-        return getLayoutResponse(nativeQueryExecutor.getLayoutByBuildingId(buildingId), dateTimeRange);
+        Integer allowedPercentage = seatService.getSeatCapacityPercent(buildingId);
+        return getLayoutResponse(nativeQueryExecutor.getLayoutByBuildingId(buildingId), dateTimeRange,allowedPercentage);
     }
 
-    private LayoutResponse getLayoutResponse(List<LayoutQueryResponse> spaceQueryResponses, DateTimeRange dateTimeRange) {
+    private LayoutResponse getLayoutResponse(List<LayoutQueryResponse> spaceQueryResponses, DateTimeRange dateTimeRange,Integer allowedPercent) {
         Set<Long> reservedSeatIds = Objects.isNull(dateTimeRange) ? Set.of() :
                 getReservedSeatIds(spaceQueryResponses, dateTimeRange);
 
@@ -53,7 +57,8 @@ public class LayoutService {
                 .map(spaceQueryResponsesForFloor -> getFloorResponses(spaceQueryResponsesForFloor, reservedSeatIds))
                 .collect(Collectors.toList());
         LayoutQueryResponse firstSpaceResponse = spaceQueryResponses.get(0);
-        return new LayoutResponse(firstSpaceResponse.getBuildingName(), floorResponses, dateTimeRange);
+
+        return new LayoutResponse(firstSpaceResponse.getBuildingName(),allowedPercent,floorResponses, dateTimeRange);
     }
 
     private FloorResponse getFloorResponses(List<LayoutQueryResponse> spaceQueryResponses, Set<Long> reservedSeatIds) {

@@ -15,6 +15,7 @@ import java.util.List;
 public class LayoutResponse {
 
     private String buildingName;
+    private Integer maxSeatAllocationPercent;
     private List<FloorResponse> floors;
     private DateTimeRange dateTimeRange;
 }
