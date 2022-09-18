@@ -8,7 +8,7 @@ import { MidLevelView } from "../../Views/MidLevelView/MidLevelView";
 import { RequesterView } from "../../Views/RequesterView/RequesterView";
 
 
-export const Dashboard = () => {
+export const Dashboard = ({self}) => {
 
     const [userData, setUserData] = useAppContext();
 
@@ -35,7 +35,7 @@ export const Dashboard = () => {
 
     return <>
         <FlexBox justifyContent="center" height="100%">
-            {getView()}
+            {self ? <RequesterView /> : getView()}
         </FlexBox>
     </>;
 }

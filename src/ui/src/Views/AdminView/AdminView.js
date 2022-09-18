@@ -4,7 +4,7 @@ import Select from 'react-select';
 import { AdminContainer } from './AdminContainer';
 import { Tabs } from '../../common/tabs';
 import {useIsFetching, useIsMutating, useMutation, useQuery} from 'react-query';
-import { allocate, getAllocate, getDepartments, getLayout } from '../../shared/api';
+import { allocate, getAllocate, getDepartments, getLayout, getReserved } from '../../shared/api';
 import { useContext, useState, useTransition } from 'react';
 import {Checkout} from '../../common/Checkout';
 import { Context, useAppContext } from '../../App';
@@ -28,13 +28,9 @@ const customStyles = {
 
 
 export const AdminView = () => {
-
     const isFetching = useIsFetching();
-
     const isMutating = useIsMutating();
-
     const [userData] = useAppContext();
-
     const [departmentData, setDepartmentData] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [layoutData , setLayoutData] = useState([]);
@@ -42,7 +38,10 @@ export const AdminView = () => {
     const [empCount, setEmpCount] = useState(0);
     const [oeCodes, setOECodes] = useState([]);
     const [selectedOe, setSelectedOe] = useState(null);
-    
+    const [maxPercent, setMaxPercent] = useState(65);
+
+    const [seatCounter, setSeatCounter ] = useState(0);
+
     const [layoutSelection, setLayoutSelection] = useState({
         oeCodeId: '',
         preference: {},
@@ -64,11 +63,18 @@ export const AdminView = () => {
 
     useQuery('fetchLayoutDetails', () => getLayout(userData.mpid), {
         onSuccess: (layoutData) => {
+            setMaxPercent(layoutData.maxSeatAllocationPercent);
             if(layoutData && layoutData.floors &&  layoutData.floors.length) {
                 setLayoutData(layoutData.floors);
             }
         }
     });
+
+    // useQuery('fetchReservedDetails', () => getReserved(userData.mpid), {
+    //     onSuccess: (layoutData) => {
+    //         console.log(layoutData);
+    //     }
+    // });
 
     const {refetch} = useQuery('fetchAllocatedDetails', () => getAllocate(userData.mpid), {
         onSuccess: (data) => {
@@ -99,6 +105,9 @@ export const AdminView = () => {
             "endSeatId": endSeat,
             "startSeatId": startSeat,
         }
+        const currCount = seatCounter;
+        const tempCount = (Number(endSeatNum) - Number(startSeatNum)) + 1;
+        setSeatCounter(currCount + tempCount);
         const tmpLayourSelPref = {...layoutSelection.preference}; 
         layoutData.forEach(({floorId, floorName}) => {
             if(floorId === floor) {
@@ -144,8 +153,6 @@ export const AdminView = () => {
         });
     }
    
-
-    
     const allocateSpace = useMutation((event) =>{
         event.preventDefault();
         return allocate(userData.mpid, {oeCodeId: layoutSelection.oeCodeId,floorRequests: layoutSelection.floorRequests })
@@ -154,7 +161,6 @@ export const AdminView = () => {
             refetch();
         }
     });
-
 
     return !!(isFetching || isMutating) ? <Loader /> : <>
     <AdminWrapper padding={'26px 36px 10px'} gap="5%" >
@@ -188,8 +194,14 @@ export const AdminView = () => {
                     departmentName={selectedDept.label}
                     oECode={selectedOe.label}
                     employees={empCount}
+                    maxPercent={maxPercent}
+                    seatCounter={seatCounter}
                 />
-                <Tabs onSelection={addFloorRequest} floorData={layoutData} employees={empCount} container={AdminContainer} />
+                <Tabs onSelection={addFloorRequest} floorData={layoutData} employees={empCount} 
+                    container={AdminContainer}
+                    maxPercent={maxPercent}
+                    seatCounter={seatCounter}
+                />
         </Shadow>}
 
     </AdminWrapper>

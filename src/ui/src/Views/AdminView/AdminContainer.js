@@ -22,7 +22,7 @@ const customStyles = {
   }
 
 
-export const AdminContainer = ({employees, zones, onSelection, floor}) => {
+export const AdminContainer = ({employees, zones, onSelection, floor, maxPercent, seatCounter}) => {
 
     const [maxSeating, setMaxSeating] = useState(0);
     const [seatCount, setSeatCount] = useState('');
@@ -38,8 +38,6 @@ export const AdminContainer = ({employees, zones, onSelection, floor}) => {
     const [startSeatNum, setStartSeatNum] = useState('');
     const [endSeatNum, setEndSeatNum] = useState('');
     const [selectedSeatValue, setSelectedSeatValue] = useState(null);
-
-
 
     useEffect(() => {
         setSelectedZone(null);
@@ -130,7 +128,9 @@ export const AdminContainer = ({employees, zones, onSelection, floor}) => {
 
 
     const isAddDisabled = () => {
-        return isSeatSelectionDisabled() || startSeat <= 0 || endSeat <= 0
+        console.log(Math.ceil(Number(employees) * Number(maxPercent) /100), seatCounter)
+        return isSeatSelectionDisabled() || startSeat <= 0 || endSeat <= 0 ||
+        ( Math.ceil(employees * maxPercent /100) - (seatCounter + (Number(endSeatNum) - Number(startSeatNum))) <= 0)
     }
 
     const onAddSelection = () => {

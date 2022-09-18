@@ -23,7 +23,7 @@ const customStyles = {
 
 
 
-export const Tabs = ({container: Container, onSelection, floorData, employee}) => {
+export const Tabs = ({container: Container, onSelection, floorData, employees, maxPercent, seatCounter}) => {
 
     const [selectedTab, setSelectedTab] = useState(floorData[0]?.floorId);
 
@@ -39,13 +39,15 @@ export const Tabs = ({container: Container, onSelection, floorData, employee}) =
             {
                 floorData.map((floor, index) => <Tab key={index} 
                     active={selectedTab === floor.floorId} 
-                    onClick={() => onTabChange(floor.floorId, floor.zone)}>
+                    onClick={() => onTabChange(floor.floorId, floor.zones)}>
                         {floor.floorName}
                 </Tab>)
             }
         </TabList>
         <TabContainer>
-            <Container onSelection={onSelection} employee={employee} zones={zones} floor={selectedTab} />
+            <Container onSelection={onSelection} employees={employees} zones={zones} floor={selectedTab} 
+            maxPercent={maxPercent}
+            seatCounter={seatCounter} />
         </TabContainer>
     </FlexBox>
 }

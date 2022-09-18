@@ -9,6 +9,8 @@ import { useEffect, useState, useTransition } from 'react';
 import {Checkout} from '../../common/Checkout';
 import { useAppContext } from '../../App';
 import { Loader } from '../../common/Loader';
+import { RequesterView } from '../RequesterView/RequesterView';
+import { SelfAssign } from '../../common/assignLink';
 
 
 const customStyles = {
@@ -35,6 +37,7 @@ export const HighLevelView = () => {
 
     const [userData] = useAppContext();
 
+
     const [departmentData, setDepartmentData] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [layoutData , setLayoutData] = useState([]);
@@ -43,6 +46,10 @@ export const HighLevelView = () => {
     const [oeCodes, setOECodes] = useState([]);
     const [selectedOe, setSelectedOe] = useState(null);
     const [empData, setEmpData]= useState({});
+
+    const [maxPercent, setMaxPercent] = useState(65);
+
+    const [seatCounter, setSeatCounter ] = useState(0);
     
     const [layoutSelection, setLayoutSelection] = useState({
         oeCodeId: '',
@@ -60,6 +67,7 @@ export const HighLevelView = () => {
 
     useQuery('fetchLayoutDetails', () => getLayout(userData.mpid), {
         onSuccess: (layoutData) => {
+            setMaxPercent(layoutData.maxSeatAllocationPercent);
             if(layoutData && layoutData.floors &&  layoutData.floors.length) {
                 setLayoutData(layoutData.floors);
             }
@@ -82,6 +90,9 @@ export const HighLevelView = () => {
             "endSeatId": endSeat,
             "startSeatId": startSeat,
         }
+        const currCount = seatCounter;
+        const tempCount = (Number(endSeatNum) - Number(startSeatNum)) + 1;
+        setSeatCounter(currCount + tempCount);
         const tmpLayourSelPref = {...layoutSelection.preference}; 
         layoutData.forEach(({floorId, floorName}) => {
             if(floorId === floor) {
@@ -157,18 +168,23 @@ export const HighLevelView = () => {
                         value={selectedOe}   
                     />
                 </FormContainer>
-             </FlexBox>    
+             </FlexBox>
+             <SelfAssign />
             </FormWrapper>
 
        {!!selectedOe && <Shadow column height={'100%'}>
                 <Checkout 
                     departmentName={userData.departmentName}
                     oECode={selectedOe.label}
-                    employee={getEmployee()}
+                    employees={getEmployee()}
+                    maxPercent={maxPercent}
+                    seatCounter={seatCounter}
                 />
-                <Tabs onSelection={addFloorRequest} floorData={layoutData} employees={getEmployee()} container={HighLevelContainer} />
+                <Tabs onSelection={addFloorRequest} floorData={layoutData} employees={getEmployee()} container={HighLevelContainer} 
+                maxPercent={maxPercent}
+                seatCounter={seatCounter}/>
         </Shadow>}
-
+        
     </AdminWrapper>
     {!!layoutSelection?.floorRequests?.length && <Footer>
         <FlexBox>
@@ -182,6 +198,7 @@ export const HighLevelView = () => {
     </Footer>}
     </>
 }
+
 
 
 const SubTitle = styled(FlexBox)`

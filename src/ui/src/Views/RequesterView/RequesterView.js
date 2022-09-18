@@ -3,10 +3,12 @@ import styled from 'styled-components';
 import Select from 'react-select';
 import { RequesterContainer } from './RequesterViewContainer';
 import { Tabs } from '../../common/tabs';
-import {useQuery} from 'react-query';
-import { getDepartments, getLayout } from '../../shared/api';
+import {useIsFetching, useIsMutating, useQuery} from 'react-query';
+import { getAllocate, getDepartments, getLayout } from '../../shared/api';
 import { useState, useTransition } from 'react';
 import {Checkout} from '../../common/Checkout';
+import { useAppContext } from '../../App';
+import { Loader } from '../../common/Loader';
 
 
 const customStyles = {
@@ -26,6 +28,14 @@ const customStyles = {
 
 
 export const RequesterView = () => {
+
+    const isFetching = useIsFetching();
+
+    const isMutating = useIsMutating();
+
+    const [userData] = useAppContext();
+
+
     const [departmentData, setDepartmentData] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [layoutData , setLayoutData] = useState([]);
@@ -40,26 +50,19 @@ export const RequesterView = () => {
         floorRequests: [],
     });
 
-    // useQuery('fetchDeptDetails', getDepartments, {
-    //     onSuccess: (departmentData) => {
-    //         const depts = [];
-    //         if(departmentData && departmentData.length) {
-    //             setDepartmentData(departmentData);
-    //             departmentData.forEach(({departmentName, departmentId}) => {
-    //                 depts.push({value:departmentId, label:departmentName });
-    //             });
-    //         }
-    //         setDepartments(depts);
-    //     }
-    // });
-
     // ADD API call for fetching floor data
 
-    useQuery('fetchLayoutDetails', getLayout, {
+    useQuery('fetchLayoutDetails', () => getLayout(userData.mpid), {
         onSuccess: (layoutData) => {
             if(layoutData && layoutData.floors &&  layoutData.floors.length) {
                 setLayoutData(layoutData.floors);
             }
+        }
+    });
+
+    const {refetch} = useQuery('fetchAllocatedDetails', () => getAllocate(userData.mpid), {
+        onSuccess: (data) => {
+            console.log(data);
         }
     });
 
@@ -134,14 +137,14 @@ export const RequesterView = () => {
 
   
     
-    return <>
+    return !!(isFetching || isMutating) ? <Loader /> :<>
     <AdminWrapper padding={'26px 36px 10px'} gap="5%" >
         <Shadow column height={'100%'}>
             {/* Pass dept, OE from context */}
                 <Checkout 
-                    departmentName={'Test Dept'}
-                    oECode={'Test OE'}
-                    mpid={'MPID'}
+                    departmentName={userData.departmentName}
+                    oECode={userData.oeCode.name}
+                    mpid={`${userData.name} - (${userData.mpid})`}
                 />
                 <Tabs onSelection={addFloorRequest} floorData={layoutData} container={RequesterContainer} />
     

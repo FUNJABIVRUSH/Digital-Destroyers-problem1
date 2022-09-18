@@ -9,6 +9,7 @@ import { useState, useTransition } from 'react';
 import {Checkout} from '../../common/Checkout';
 import { useAppContext } from '../../App';
 import { Loader } from '../../common/Loader';
+import { SelfAssign } from '../../common/assignLink';
 
 
 const customStyles = {
@@ -44,6 +45,10 @@ export const LowLevelView = () => {
     const [selectedOe, setSelectedOe] = useState(null);
     const [empData, setEmpData]= useState({});
     const [selectedEmployee, setSelectedEmployee]= useState({});
+
+    const [maxPercent, setMaxPercent] = useState(65);
+
+    const [seatCounter, setSeatCounter ] = useState(0);
     
     const [layoutSelection, setLayoutSelection] = useState({
         oeCodeId: '',
@@ -66,6 +71,7 @@ export const LowLevelView = () => {
 
     useQuery('fetchLayoutDetails', () => getLayout(userData.mpid), {
         onSuccess: (layoutData) => {
+            setMaxPercent(layoutData.maxSeatAllocationPercent);
             if(layoutData && layoutData.floors &&  layoutData.floors.length) {
                 setLayoutData(layoutData.floors);
             }
@@ -90,6 +96,9 @@ export const LowLevelView = () => {
             "endSeatId": endSeat,
             "startSeatId": startSeat,
         }
+        const currCount = seatCounter;
+        const tempCount = (Number(endSeatNum) - Number(startSeatNum)) + 1;
+        setSeatCounter(currCount + tempCount);
         const tmpLayourSelPref = {...layoutSelection.preference}; 
         layoutData.forEach(({floorId, floorName}) => {
             if(floorId === floor) {
@@ -160,6 +169,7 @@ export const LowLevelView = () => {
                     />
                 </FormContainer>
              </FlexBox>    
+             <SelfAssign />
             </FormWrapper>
 
        {!!selectedEmployee && <Shadow column height={'100%'}>
@@ -167,8 +177,12 @@ export const LowLevelView = () => {
                     departmentName={userData.departmentName}
                     oECode={userData.oeCode.name}
                     mpid={selectedEmployee.label}
+                    maxPercent={maxPercent}
+                    seatCounter={seatCounter}
                 />
-                <Tabs onSelection={addFloorRequest} floorData={layoutData} employees={empCount} container={LowLevelContainer} />
+                <Tabs onSelection={addFloorRequest} floorData={layoutData} employees={empCount} container={LowLevelContainer} 
+                maxPercent={maxPercent}
+                seatCounter={seatCounter}/>
         </Shadow>}
 
     </AdminWrapper>

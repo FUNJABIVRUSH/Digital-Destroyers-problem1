@@ -22,7 +22,7 @@ const customStyles = {
   }
 
 
-export const LowLevelContainer = ({employees, zones, onSelection, floor}) => {
+export const LowLevelContainer = ({employees, zones, onSelection, floor, maxPercent, seatCounter}) => {
 
     const [maxSeating, setMaxSeating] = useState(0);
     const [seatCount, setSeatCount] = useState('');
@@ -130,7 +130,7 @@ export const LowLevelContainer = ({employees, zones, onSelection, floor}) => {
 
 
     const isAddDisabled = () => {
-        return isSeatSelectionDisabled() || startSeat <= 0 || endSeat <= 0
+        return isSeatSelectionDisabled() || startSeat <= 0 || endSeat <= 0 
     }
 
     const onAddSelection = () => {

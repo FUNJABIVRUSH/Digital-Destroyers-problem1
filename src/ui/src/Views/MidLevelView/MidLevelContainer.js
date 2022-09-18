@@ -22,7 +22,7 @@ const customStyles = {
   }
 
 
-export const MidLevelContainer = ({employees, zones, onSelection, floor}) => {
+export const MidLevelContainer = ({employees, zones, onSelection, floor, maxPercent, seatCounter}) => {
 
     const [maxSeating, setMaxSeating] = useState(0);
     const [seatCount, setSeatCount] = useState('');
@@ -69,7 +69,6 @@ export const MidLevelContainer = ({employees, zones, onSelection, floor}) => {
             setSeatCountError(null);
         }
         const {seatOption} = setSeatOptionsForSelection(selectedZone.value, value);
-        console.log(seatOption);
         setSeatOptions(seatOption);
     }
 
@@ -82,7 +81,6 @@ export const MidLevelContainer = ({employees, zones, onSelection, floor}) => {
             if(seat.isReserved) {
                 booked.push(seat)
             } else {
-                console.log(Number(seat.seatNumber), Number(seatCount), Number(maxSeating));
                 if(((Number(seat.seatNumber) + Number(seatCount))- 1) <= Number(maxSeating)) {
                     seatOption.push({value: seat.seatId, label: seat.seatNumber});
                 }
@@ -130,7 +128,8 @@ export const MidLevelContainer = ({employees, zones, onSelection, floor}) => {
 
 
     const isAddDisabled = () => {
-        return isSeatSelectionDisabled() || startSeat <= 0 || endSeat <= 0
+        return isSeatSelectionDisabled() || startSeat <= 0 || endSeat <= 0 || 
+        ( Math.ceil(employees * maxPercent /100) - (seatCounter + (Number(endSeatNum) - Number(startSeatNum))) <= 0)
     }
 
     const onAddSelection = () => {

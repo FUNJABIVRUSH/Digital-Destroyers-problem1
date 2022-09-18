@@ -3,8 +3,7 @@ import styled from "styled-components"
 
 
 
-export const Checkout = ({departmentName, oECode, employees, mpid}) => {
-
+export const Checkout = ({departmentName, oECode, employees, mpid, maxPercent, seatCounter}) => {
 
     return <CheckoutContainer width={'100%'} alignItems={'center'} gap="5%">
         <Title>{departmentName}</Title>
@@ -15,7 +14,11 @@ export const Checkout = ({departmentName, oECode, employees, mpid}) => {
         </DetailsWrapper>
         {!!employees && <DetailsWrapper column>
             <SubTitle full >Max Allocable Space</SubTitle>
-            <SubText>{Math.ceil(employees * 65 /100)} Units</SubText>
+            <SubText>{Math.ceil(employees * maxPercent /100) - seatCounter} Units</SubText>
+        </DetailsWrapper>}
+        {!!seatCounter && <DetailsWrapper column>
+            <SubTitle full >Allocated Seats</SubTitle>
+            <SubText>{seatCounter} Units</SubText>
         </DetailsWrapper>}
     </CheckoutContainer>
 }

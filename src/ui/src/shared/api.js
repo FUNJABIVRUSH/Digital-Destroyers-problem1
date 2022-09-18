@@ -67,3 +67,13 @@ export const allocate = (empPID, data) => {
         return Promise.reject(error);
     });
 }
+
+export const getReserved = (empPID) => {
+    return fetch(`${BASE_URL}/space​/reserved?pid=${empPID}`)
+        .then(async (response) => {
+            return await response.json();
+        })
+        .catch((error) => {
+            return Promise.reject(error);
+        });
+}

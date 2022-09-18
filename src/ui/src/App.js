@@ -31,9 +31,10 @@ const queryClient = new QueryClient({
 
 const App = () => {
   const [userData, setUserData] = useState(null);
+  const [maxPercentage, setMaxPercentage] = useState(65);
 
-  return <Context.Provider value={[userData, setUserData]}><QueryClientProvider client={queryClient}>
-    <GlobalStyles />
+  return <Context.Provider value={[userData, setUserData, maxPercentage, setMaxPercentage]}><QueryClientProvider client={queryClient}>
+    <GlobalStyles />  
     <Router>
       <Switch>
         <StyledMain>
