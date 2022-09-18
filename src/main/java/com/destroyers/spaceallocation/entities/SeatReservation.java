@@ -1,6 +1,7 @@
 package com.destroyers.spaceallocation.entities;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ import java.time.LocalTime;
 @Table(name = "seat_reservation")
 @Entity
 @EqualsAndHashCode
+@SuperBuilder(toBuilder = true)
 public class SeatReservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
