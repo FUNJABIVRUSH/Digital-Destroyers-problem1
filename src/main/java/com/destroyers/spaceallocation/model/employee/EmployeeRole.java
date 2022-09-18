@@ -2,6 +2,9 @@ package com.destroyers.spaceallocation.model.employee;
 
 public enum EmployeeRole {
     ADMIN,
-    MANAGER,
+    HIGH_LEVEL_MANAGER,
+    MID_LEVEL_MANAGER,
+    LOW_LEVEL_MANAGER,
     EMPLOYEE
+
 }

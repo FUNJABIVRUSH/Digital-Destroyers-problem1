@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/employee")
@@ -20,8 +21,8 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public List<EmployeeResponse> getEmployees(){
-        return employeeService.getAll();
+    public List<EmployeeResponse> getEmployees(@RequestParam(required = false) Optional<Long> oeCodeId){
+        return employeeService.getEmployees(oeCodeId);
     }
 
     @GetMapping("/{pid}")
