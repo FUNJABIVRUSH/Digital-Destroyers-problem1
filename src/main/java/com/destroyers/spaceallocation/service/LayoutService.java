@@ -95,7 +95,9 @@ public class LayoutService {
                 .stream()
                 .filter(seatReservation ->
                         (beforeOrEqual(seatReservation.getStartTime(), startTime) && seatReservation.getEndTime().isAfter(startTime)) ||
-                                (afterOrEqual(seatReservation.getStartTime(), endTime) && beforeOrEqual(seatReservation.getEndTime(), endTime)))
+                                (afterOrEqual(seatReservation.getStartTime(), endTime) && beforeOrEqual(seatReservation.getEndTime(), endTime)) ||
+                                (afterOrEqual(seatReservation.getStartTime(), startTime) && beforeOrEqual(seatReservation.getEndTime(), endTime))
+                )
                 .map(SeatReservation::getSeat)
                 .map(Seat::getId)
                 .collect(Collectors.toSet());

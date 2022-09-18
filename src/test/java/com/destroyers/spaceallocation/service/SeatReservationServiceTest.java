@@ -10,6 +10,7 @@ import com.destroyers.spaceallocation.model.DateTimeRange;
 import com.destroyers.spaceallocation.model.seat.request.DeleteReservationRequest;
 import com.destroyers.spaceallocation.model.seat.request.SeatRequest;
 import com.destroyers.spaceallocation.model.seat.request.SeatReservationRequest;
+import com.destroyers.spaceallocation.model.seat.request.SeatUpdateRequest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -102,11 +103,38 @@ class SeatReservationServiceTest {
 
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
             when(employee.getId()).thenReturn(1L);
-            when(seatReservationDao.findAllByEmployeeIdAndSeatIdAndReservationDate(1L, 1L, date)).thenReturn(List.of(seatReservation));
+            when(seatReservationDao.findByEmployeeIdAndSeatIdAndReservationDate(1L, 1L, date)).thenReturn(Optional.of(seatReservation));
 
             seatReservationService.deleteReservations(List.of(reservationRequest));
 
             verify(seatReservationDao).deleteAll(List.of(seatReservation));
+        }
+    }
+
+    @Nested
+    class UpdateReservation {
+        @Test
+        void shouldUpdateReservationForGivenPid() {
+            String pid = "M12345";
+            LocalDate date = LocalDate.now();
+            String startTime = LocalTime.now().toString();
+            String endTime = LocalTime.now().plusHours(8).toString();
+            DateTimeRange dateTimeRange = new DateTimeRange(date.plusDays(1), startTime, endTime);
+            Seat newSeat = mock(Seat.class);
+
+            SeatUpdateRequest reservationRequest = new SeatUpdateRequest( 1L, 2L, pid, date, dateTimeRange);
+            Employee employee = mock(Employee.class);
+            SeatReservation seatReservation = new SeatReservation(1L, mock(Seat.class), null, null, null, employee);
+
+            when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
+            when(employee.getId()).thenReturn(1L);
+            when(seatReservationDao.findByEmployeeIdAndSeatIdAndReservationDate(1L, 1L, date)).thenReturn(Optional.of(seatReservation));
+            when(seatDao.findById(2L)).thenReturn(Optional.of(newSeat));
+
+            seatReservationService.update(List.of(reservationRequest));
+
+            verify(seatReservationDao).saveAll(List.of(new SeatReservation(1L, newSeat, dateTimeRange.getDate(),
+                    dateTimeRange.getStartTime(), dateTimeRange.getEndTime(), employee)));
         }
     }
 
