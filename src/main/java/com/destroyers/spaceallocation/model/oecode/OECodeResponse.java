@@ -13,8 +13,9 @@ import lombok.ToString;
 public class OECodeResponse {
     private Long id;
     private String name;
+    private Integer totalEmployees;
 
     public static OECodeResponse from(OECode oeCode) {
-        return new OECodeResponse(oeCode.getId(), oeCode.getName());
+        return new OECodeResponse(oeCode.getId(), oeCode.getName(), oeCode.getTotalEmployees());
     }
 }

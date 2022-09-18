@@ -56,7 +56,8 @@ class EmployeeServiceTest {
             List<EmployeeResponse> employees = employeeService.getEmployees(Optional.of(1L));
 
             assertThat(employees).hasSize(1);
-            assertThat(employees).contains(new EmployeeResponse( 1L, "M12345", "User-1", ADMIN, new OECodeResponse(1L, "MBLD1" ), List.of()));
+            assertThat(employees).contains(new EmployeeResponse(1L, "M12345", "User-1", ADMIN,
+                    new OECodeResponse(1L, "MBLD1", 100), 1L, "Private Banking", List.of()));
         }
     }
 
@@ -73,7 +74,8 @@ class EmployeeServiceTest {
 
             EmployeeResponse employeeResponse = employeeService.getByPid(employee.getMpid());
 
-            assertThat(employeeResponse).isEqualTo(new EmployeeResponse(1L, "M12345", "User-1", ADMIN, new OECodeResponse(1L, "MBLD1"), List.of()));
+            assertThat(employeeResponse).isEqualTo(new EmployeeResponse(1L, "M12345", "User-1", ADMIN,
+                    new OECodeResponse(1L, "MBLD1", 100), 1L, "Private Banking", List.of()));
         }
     }
 
