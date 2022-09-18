@@ -1,6 +1,7 @@
 package com.destroyers.spaceallocation.model.space.response;
 
 import com.destroyers.spaceallocation.entities.SpaceRequest;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,7 +20,9 @@ public class RequestResponse {
     private Long raisedWithOECodeId;
     private Long startSeatId;
     private Long endSeatId;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
     public static RequestResponse from(SpaceRequest request) {
