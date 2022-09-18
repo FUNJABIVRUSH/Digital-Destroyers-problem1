@@ -82,11 +82,12 @@ INSERT INTO seat(id, number, zone_id, type) VALUES (57	,'1',8, 'WINDOW');
 INSERT INTO seat(id, number, zone_id, type) VALUES (58	,'2',8, 'WINDOW');
 INSERT INTO seat(id, number, zone_id, type) VALUES (59	,'3',8, 'NON_WINDOW');
 INSERT INTO seat(id, number, zone_id, type) VALUES (60	,'4',8, 'NON_WINDOW');
-INSERT INTO seat(id, number, zone_id, type) VALUES (63	,'5',8, 'WINDOW');
-INSERT INTO seat(id, number, zone_id, type) VALUES (64	,'6',8, 'WINDOW');
-INSERT INTO seat(id, number, zone_id, type) VALUES (65	,'7',8, 'WINDOW');
-INSERT INTO seat(id, number, zone_id, type) VALUES (61	,'8',8, 'WINDOW');
-INSERT INTO seat(id, number, zone_id, type) VALUES (62	,'9',8, 'WINDOW');
+INSERT INTO seat(id, number, zone_id, type) VALUES (61	,'5',8, 'WINDOW');
+INSERT INTO seat(id, number, zone_id, type) VALUES (62	,'6',8, 'WINDOW');
+INSERT INTO seat(id, number, zone_id, type) VALUES (63	,'7',8, 'WINDOW');
+INSERT INTO seat(id, number, zone_id, type) VALUES (64	,'8',8, 'NON_WINDOW');
+INSERT INTO seat(id, number, zone_id, type) VALUES (65	,'9',8, 'NON_WINDOW');
+
 
 INSERT INTO department (id, name, building_id) VALUES (1, 'Private Banking', 1);
 INSERT INTO department (id, name, building_id) VALUES (2, 'Investment Banking', 1);
