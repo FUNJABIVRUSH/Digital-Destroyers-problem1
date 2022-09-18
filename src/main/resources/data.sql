@@ -219,6 +219,7 @@ INSERT INTO employee (id, mpid, name, role, department_id, oe_code_id) VALUES (1
 
 
 INSERT INTO department_admin (id, employee_id, department_id) VALUES (1, 1, 1);
+INSERT INTO department_admin (id, employee_id, department_id) VALUES (2, 1, 2);
 
 
 
