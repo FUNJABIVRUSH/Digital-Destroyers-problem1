@@ -89,7 +89,7 @@ class SpaceServiceTest {
             SeatRange seatRange = new SeatRange(1L, startSeat, endSeat);
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
             when(employee.getOeCode()).thenReturn(oeCode);
-            when(spaceDao.findAllByAssignedOeCodeIdAndIsConfirmed(any(),true)).thenReturn(List.of(new Space(1L, seatRange, employee, oeCode, LocalDate.now(), LocalDate.now().plusDays(5L),true)));
+            when(spaceDao.findAllByAssignedOeCodeIdAndIsConfirmed(any(),eq(Boolean.TRUE))).thenReturn(List.of(new Space(1L, seatRange, employee, oeCode, LocalDate.now(), LocalDate.now().plusDays(5L),true)));
 
             List<SpaceResponse> spaceResponses = spaceService.getSpaceAllocatedTo(pid);
 
