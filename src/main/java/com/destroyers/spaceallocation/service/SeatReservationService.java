@@ -8,6 +8,7 @@ import com.destroyers.spaceallocation.entities.Employee;
 import com.destroyers.spaceallocation.entities.Seat;
 import com.destroyers.spaceallocation.entities.SeatReservation;
 import com.destroyers.spaceallocation.model.DateTimeRange;
+import com.destroyers.spaceallocation.model.seat.request.DeleteReservationRequest;
 import com.destroyers.spaceallocation.model.seat.request.SeatRequest;
 import com.destroyers.spaceallocation.model.seat.request.SeatReservationRequest;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,6 +48,19 @@ public class SeatReservationService {
         return seatReservationDao.saveAll(seatReservations).stream()
                 .map(SeatReservation::getId)
                 .collect(Collectors.toList());
+    }
+
+    public void deleteReservations(List<DeleteReservationRequest> requests){
+        List<SeatReservation> reservations = requests.stream()
+                .map(this::getSeatReservationsToDelete)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        seatReservationDao.deleteAll(reservations);
+    }
+
+    private List<SeatReservation> getSeatReservationsToDelete(DeleteReservationRequest request) {
+        Employee employee = getEmployee(request.getPid());
+        return seatReservationDao.findAllByEmployeeIdAndReservationDate(employee.getId(), request.getDate());
     }
 
     private Stream<SeatReservation> getSeatReservations(SeatRequest seatRequest) {

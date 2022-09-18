@@ -10,4 +10,5 @@ import java.util.List;
 public interface SeatReservationDao extends JpaRepository<SeatReservation, Long> {
 
     List<SeatReservation> findAllBySeatIdInAndReservationDate(List<Long> seatId, LocalDate reservationDate);
+    List<SeatReservation> findAllByEmployeeIdAndReservationDate(Long employeeId, LocalDate reservationDate);
 }

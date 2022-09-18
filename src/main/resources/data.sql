@@ -23,10 +23,13 @@ INSERT INTO department (id, name, building_id) VALUES (1, 'Private Banking', 1);
 INSERT INTO oe_code (id, name, total_employees, department_id, type) VALUES (1, 'MBLD1', 100, 1, 'HIGH');
 INSERT INTO oe_code (id, name, total_employees, department_id, type, parent_oe_code_id) VALUES (2, 'MBLD11', 100, 1, 'MID', 1);
 INSERT INTO oe_code (id, name, total_employees, department_id, type, parent_oe_code_id) VALUES (3, 'MBLD111', 100, 1, 'LOW', 2);
+INSERT INTO oe_code (id, name, total_employees, department_id, type, parent_oe_code_id) VALUES (4, 'MBLD1111', 100, 1, 'LOW', 3);
 
 INSERT INTO employee (id, mpid, name, role, department_id, oe_code_id) VALUES (1, 'M12345', 'User-1', 'ADMIN', 1, 1);
-INSERT INTO employee (id, mpid, name, role, department_id, oe_code_id) VALUES (2, 'M12346', 'User-2', 'MANAGER', 1, 1);
-INSERT INTO employee (id, mpid, name, role, department_id, oe_code_id) VALUES (3, 'M12347', 'User-3', 'EMPLOYEE', 1, 2);
+INSERT INTO employee (id, mpid, name, role, department_id, oe_code_id) VALUES (2, 'M12346', 'User-2', 'HIGH_LEVEL_MANAGER', 1, 1);
+INSERT INTO employee (id, mpid, name, role, department_id, oe_code_id) VALUES (3, 'M12347', 'User-3', 'MID_LEVEL_MANAGER', 1, 2);
+INSERT INTO employee (id, mpid, name, role, department_id, oe_code_id) VALUES (4, 'M12348', 'User-4', 'LOW_LEVEL_MANAGER', 1, 3);
+INSERT INTO employee (id, mpid, name, role, department_id, oe_code_id) VALUES (5, 'M12349', 'User-5', 'EMPLOYEE', 1, 4);
 
 INSERT INTO department_admin (id, employee_id, department_id) VALUES (1, 1, 1);
 
