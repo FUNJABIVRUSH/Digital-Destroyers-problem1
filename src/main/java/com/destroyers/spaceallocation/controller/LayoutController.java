@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Objects;
 
 @RestController
@@ -18,7 +19,6 @@ public class LayoutController {
     private LayoutService layoutService;
 
     @GetMapping
-    @CrossOrigin(origins = "*")
     public LayoutResponse getLayout(@RequestParam Long buildingId,
                                     @RequestParam(required = false) String date,
                                     @RequestParam(required = false) String startTime,
