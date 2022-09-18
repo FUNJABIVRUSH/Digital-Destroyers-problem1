@@ -101,6 +101,13 @@ public class SpaceService {
         });
     }
 
+    private SpaceRequest getSpaceRequest(Long requestId) {
+        return spaceRequestDao.findById(requestId).orElseThrow(() -> {
+            LOGGER.error("Request not found. id: {}", requestId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found. id: " + requestId);
+        });
+    }
+
     private Seat getSeat(Long seatId) {
         return seatDao.findById(seatId).orElseThrow(() -> {
             LOGGER.error("Seat not found. id: {}", seatId);
@@ -192,6 +199,21 @@ public class SpaceService {
                 .stream().map(RequestResponse::from)
                 .collect(Collectors.toList());
         return new SpaceRequestResponseWrapper(myRequestsToOther,requestToMe);
+    }
+
+    @Transactional
+    public void approveRequest(Long requestId, String pid) {
+        Employee employee = getEmployee(pid);
+        SpaceRequest spaceRequest = getSpaceRequest(requestId);
+        if(!spaceRequest.getOwnerOeCodeId().equals(employee.getOeCode())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
+        spaceRequest.getRequestSpaceId().setIsConfirmed(true);
+        spaceRequest.getRequestSpaceId().setAssignedOeCodeId(spaceRequest.getRequestOeCodeId());
+        spaceRequest.setApprovalDate(LocalDate.now());
+        spaceRequest.setIsApproved(true);
+        spaceRequestDao.saveAndFlush(spaceRequest);
     }
 }
 

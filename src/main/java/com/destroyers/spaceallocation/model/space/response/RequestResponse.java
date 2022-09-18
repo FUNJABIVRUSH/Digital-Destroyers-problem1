@@ -16,6 +16,7 @@ import java.time.LocalDate;
 public class RequestResponse {
     private Long requestId;
     private Boolean isApproved;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate createdDate;
     private Long raisedWithOECodeId;
     private Long startSeatId;

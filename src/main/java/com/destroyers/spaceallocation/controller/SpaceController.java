@@ -58,4 +58,9 @@ public class SpaceController {
     public SpaceRequestResponseWrapper getRequestedSpaces(@RequestParam String pid) {
         return spaceService.getRequestedSpace(pid);
     }
+
+    @PutMapping("/request/approve")
+    public void approveRequest(@RequestParam Long requestId,@RequestParam String pid) {
+         spaceService.approveRequest(requestId,pid);
+    }
 }
