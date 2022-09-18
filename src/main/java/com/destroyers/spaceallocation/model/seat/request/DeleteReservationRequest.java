@@ -13,5 +13,6 @@ import java.time.LocalDate;
 @Data
 public class DeleteReservationRequest {
     private String pid;
+    private Long seatId;
     private LocalDate date;
 }

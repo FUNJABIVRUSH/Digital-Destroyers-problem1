@@ -96,13 +96,13 @@ class SeatReservationServiceTest {
         void shouldDeleteReservationForGivenPid() {
             String pid = "M12345";
             LocalDate date = LocalDate.now();
-            DeleteReservationRequest reservationRequest = new DeleteReservationRequest(pid, date);
+            DeleteReservationRequest reservationRequest = new DeleteReservationRequest(pid, 1L, date);
             Employee employee = mock(Employee.class);
             SeatReservation seatReservation = mock(SeatReservation.class);
 
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
             when(employee.getId()).thenReturn(1L);
-            when(seatReservationDao.findAllByEmployeeIdAndReservationDate(1L, date)).thenReturn(List.of(seatReservation));
+            when(seatReservationDao.findAllByEmployeeIdAndSeatIdAndReservationDate(1L, 1L, date)).thenReturn(List.of(seatReservation));
 
             seatReservationService.deleteReservations(List.of(reservationRequest));
 
