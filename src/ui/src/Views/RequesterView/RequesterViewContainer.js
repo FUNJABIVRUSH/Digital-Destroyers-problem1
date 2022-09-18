@@ -26,7 +26,7 @@ const customStyles = {
   }
 
 
-export const LowLevelContainer = ({employees, zones, onSelection, floor}) => {
+export const RequesterContainer = ({employees, zones, onSelection, floor}) => {
 
     const [maxSeating, setMaxSeating] = useState(0);
     const [seatCount, setSeatCount] = useState('');

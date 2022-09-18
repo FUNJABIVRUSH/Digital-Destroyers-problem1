@@ -1,7 +1,7 @@
 import {FlexBox} from 'react-styled-flex';
 import styled from 'styled-components';
 import Select from 'react-select';
-import { LowLevelContainer } from './RequesterViewContainer';
+import { RequesterContainer } from './RequesterViewContainer';
 import { Tabs } from '../../common/tabs';
 import {useQuery} from 'react-query';
 import { getDepartments, getLayout } from '../../shared/api';
@@ -25,7 +25,7 @@ const customStyles = {
 
 
 
-export const LowLevelView = () => {
+export const RequesterView = () => {
     const [departmentData, setDepartmentData] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [layoutData , setLayoutData] = useState([]);
@@ -143,7 +143,7 @@ export const LowLevelView = () => {
                     oECode={'Test OE'}
                     mpid={'MPID'}
                 />
-                <Tabs onSelection={addFloorRequest} floorData={layoutData} container={LowLevelContainer} />
+                <Tabs onSelection={addFloorRequest} floorData={layoutData} container={RequesterContainer} />
     
         </Shadow>
 

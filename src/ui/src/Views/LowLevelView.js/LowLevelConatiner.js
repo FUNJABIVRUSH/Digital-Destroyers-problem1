@@ -158,18 +158,6 @@ export const LowLevelContainer = ({employees, zones, onSelection, floor}) => {
             <SubTitle>Select Zone </SubTitle>
             <StyledSelect value={selectedZone} onChange={onZoneChange} options={zoneOptions} styles={customStyles}></StyledSelect>   
         </FieldsWrapper>
-        {!!selectedZone  && <><FieldsWrapper>
-            <SubTitle>Seat space to be alloted *</SubTitle>
-            <StyledInput type="number" max={maxSeating} min={1} value={seatCount} onChange={({target}) => onChangeSeatCount(target.value) } /> / {maxSeating}  
-        </FieldsWrapper>
-        <FieldsWrapper>
-            <SubTitle>Start seat Number *</SubTitle>  
-            <StyledSelect isDisabled={isSeatSelectionDisabled()} value={selectedSeatValue} options={seatOptions} onChange={onChangeStartSeat} styles={customStyles}></StyledSelect>      
-        </FieldsWrapper>
-        <FieldsWrapper>
-            <StyledButton  onClick={onAddSelection} disabled={isAddDisabled()}>Add Selection</StyledButton> 
-        </FieldsWrapper>
-        </>}
     </FlexBox>
 }
 

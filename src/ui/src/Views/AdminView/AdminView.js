@@ -3,10 +3,12 @@ import styled from 'styled-components';
 import Select from 'react-select';
 import { AdminContainer } from './AdminContainer';
 import { Tabs } from '../../common/tabs';
-import {useMutation, useQuery} from 'react-query';
+import {useIsFetching, useIsMutating, useMutation, useQuery} from 'react-query';
 import { allocate, getAllocate, getDepartments, getLayout } from '../../shared/api';
-import { useState, useTransition } from 'react';
+import { useContext, useState, useTransition } from 'react';
 import {Checkout} from '../../common/Checkout';
+import { Context, useAppContext } from '../../App';
+import { Loader } from '../../common/Loader';
 
 
 const customStyles = {
@@ -26,6 +28,13 @@ const customStyles = {
 
 
 export const AdminView = () => {
+
+    const isFetching = useIsFetching();
+
+    const isMutating = useIsMutating();
+
+    const [userData] = useAppContext();
+
     const [departmentData, setDepartmentData] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [layoutData , setLayoutData] = useState([]);
@@ -40,7 +49,7 @@ export const AdminView = () => {
         floorRequests: [],
     });
 
-    useQuery('fetchDeptDetails', getDepartments, {
+    useQuery('fetchDeptDetails', () => getDepartments(userData.mpid), {
         onSuccess: (departmentData) => {
             const depts = [];
             if(departmentData && departmentData.length) {
@@ -53,7 +62,7 @@ export const AdminView = () => {
         }
     });
 
-    useQuery('fetchLayoutDetails', getLayout, {
+    useQuery('fetchLayoutDetails', () => getLayout(userData.mpid), {
         onSuccess: (layoutData) => {
             if(layoutData && layoutData.floors &&  layoutData.floors.length) {
                 setLayoutData(layoutData.floors);
@@ -61,7 +70,7 @@ export const AdminView = () => {
         }
     });
 
-    useQuery('fetchAllocatedDetails', getAllocate, {
+    const {refetch} = useQuery('fetchAllocatedDetails', () => getAllocate(userData.mpid), {
         onSuccess: (data) => {
             console.log(data);
         }
@@ -139,15 +148,15 @@ export const AdminView = () => {
     
     const allocateSpace = useMutation((event) =>{
         event.preventDefault();
-        return allocate({oeCodeId: layoutSelection.oeCodeId,floorRequests: layoutSelection.floorRequests })
+        return allocate(userData.mpid, {oeCodeId: layoutSelection.oeCodeId,floorRequests: layoutSelection.floorRequests })
     }, {
         onSuccess: (data) => {
-            console.log(data);
+            refetch();
         }
     });
 
 
-    return <>
+    return !!(isFetching || isMutating) ? <Loader /> : <>
     <AdminWrapper padding={'26px 36px 10px'} gap="5%" >
          <FormWrapper gap='10%' height={'100px'}>
              <FlexBox gap='10%'>

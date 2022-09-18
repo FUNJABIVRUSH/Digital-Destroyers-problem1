@@ -1,7 +1,7 @@
 const BASE_URL = 'http://localhost:8080';
 
 export const getEmployeeByPID = (empPID) => {
-    return fetch(`${BASE_URL}/employee/M12348`)
+    return fetch(`${BASE_URL}/employee/${empPID}`)
         .then(async (response) => {
             return await response.json();
         })
@@ -22,7 +22,7 @@ export const getEmployeeByOE = (empPID) => {
 
 
 export const getDepartments = (empPID) => {
-    return fetch(`${BASE_URL}/department?pid=M12348`)
+    return fetch(`${BASE_URL}/department?pid=${empPID}`)
         .then(async (response) => {
             return await response.json();
         })
@@ -32,7 +32,7 @@ export const getDepartments = (empPID) => {
 }
 
 export const getLayout = (empPID) => {
-    return fetch(`${BASE_URL}/layout?buildingId=1&pid=M12348`)
+    return fetch(`${BASE_URL}/layout?buildingId=1&pid=${empPID}`)
         .then(async (response) => {
             return await response.json();
         })
@@ -42,7 +42,7 @@ export const getLayout = (empPID) => {
 }
 
 export const getAllocate = (empPID) => {
-    return fetch(`${BASE_URL}/space/allocated?pid=M12348`)
+    return fetch(`${BASE_URL}/space/allocated?pid=${empPID}`)
         .then(async (response) => {
             return await response.json();
         })
@@ -51,9 +51,8 @@ export const getAllocate = (empPID) => {
         });
 }
 
-export const allocate = (data) => {
-    console.log(data);
-    return fetch(`${BASE_URL}/space/allocate?pid=M12348`, {
+export const allocate = (empPID, data) => {
+    return fetch(`${BASE_URL}/space/allocate?pid=${empPID}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

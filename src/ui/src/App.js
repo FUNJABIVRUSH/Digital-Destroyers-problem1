@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import './App.css';
 import { BrowserRouter as Router, Switch } from 'react-router-dom';
 import { Routes } from './routes/routes';
@@ -7,7 +7,11 @@ import styled from 'styled-components';
 import GlobalStyles from './GlobalStyles';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
-export const Context = React.createContext();
+const Context = React.createContext();
+
+export const useAppContext = () => useContext(Context);
+
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -26,11 +30,10 @@ const queryClient = new QueryClient({
 })
 
 const App = () => {
-  const [userData, setUserData] = useState();
+  const [userData, setUserData] = useState(null);
 
   return <Context.Provider value={[userData, setUserData]}><QueryClientProvider client={queryClient}>
     <GlobalStyles />
-    <Header />
     <Router>
       <Switch>
         <StyledMain>

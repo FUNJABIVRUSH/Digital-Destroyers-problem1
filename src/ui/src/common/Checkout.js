@@ -14,8 +14,8 @@ export const Checkout = ({departmentName, oECode, employees, mpid}) => {
             {!!mpid && <SubText>{mpid}</SubText>}
         </DetailsWrapper>
         {!!employees && <DetailsWrapper column>
-            <SubTitle full >Max Allocable Space for</SubTitle>
-            <SubText>{Math.ceil(employees * 65 /100)}</SubText>
+            <SubTitle full >Max Allocable Space</SubTitle>
+            <SubText>{Math.ceil(employees * 65 /100)} Units</SubText>
         </DetailsWrapper>}
     </CheckoutContainer>
 }

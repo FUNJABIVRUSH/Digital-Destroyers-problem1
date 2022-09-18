@@ -3,10 +3,12 @@ import styled from 'styled-components';
 import Select from 'react-select';
 import { LowLevelContainer } from './LowLevelConatiner';
 import { Tabs } from '../../common/tabs';
-import {useMutation, useQuery} from 'react-query';
-import { getDepartments, getEmployeeByPID, getLayout, allocate, getEmployeeByOE } from '../../shared/api';
+import {useIsFetching, useIsMutating, useMutation, useQuery} from 'react-query';
+import { getDepartments, getEmployeeByPID, getLayout, allocate, getEmployeeByOE, getAllocate } from '../../shared/api';
 import { useState, useTransition } from 'react';
 import {Checkout} from '../../common/Checkout';
+import { useAppContext } from '../../App';
+import { Loader } from '../../common/Loader';
 
 
 const customStyles = {
@@ -26,6 +28,13 @@ const customStyles = {
 
 
 export const LowLevelView = () => {
+
+    const isFetching = useIsFetching();
+
+    const isMutating = useIsMutating();
+
+    const [userData] = useAppContext();
+
     const [departmentData, setDepartmentData] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [layoutData , setLayoutData] = useState([]);
@@ -34,6 +43,7 @@ export const LowLevelView = () => {
     const [oeCodes, setOECodes] = useState([]);
     const [selectedOe, setSelectedOe] = useState(null);
     const [empData, setEmpData]= useState({});
+    const [selectedEmployee, setSelectedEmployee]= useState({});
     
     const [layoutSelection, setLayoutSelection] = useState({
         oeCodeId: '',
@@ -41,21 +51,20 @@ export const LowLevelView = () => {
         floorRequests: [],
     });
 
-    useQuery('fetchEmployess', getEmployeeByOE, {
+    useQuery('fetchEmployess', () => getEmployeeByOE(userData.oeCode.id), {
         onSuccess: (empData) => {
             console.log(empData);
-            // const oECodes = [];
-            // setEmpData(empData);
-            // if(empData && empData.childOECodes?.length) {
-            //     empData.childOECodes.forEach(({name, id}) => {
-            //         oECodes.push({value: id, label: name});
-            //     });
-            // }
-            // setOECodes(oECodes);
+            const emps = [];
+            if(empData && empData.length) {
+                empData.forEach(({name, mpid}) => {
+                    emps.push({value: mpid, label: `${name} - (${mpid})`})
+                })
+            }
+            setEmpData(emps)
         }
     });
 
-    useQuery('fetchLayoutDetails', getLayout, {
+    useQuery('fetchLayoutDetails', () => getLayout(userData.mpid), {
         onSuccess: (layoutData) => {
             if(layoutData && layoutData.floors &&  layoutData.floors.length) {
                 setLayoutData(layoutData.floors);
@@ -63,20 +72,17 @@ export const LowLevelView = () => {
         }
     });
 
-    const onChangeDepartment = (value) => {
-        setSelectedDept(value);
-        const oEcode = [];
-        departmentData.forEach(({departmentId, oeCodeName,oeCodeId}) => {
-            if(value.value === departmentId) {
-                oEcode.push({value: oeCodeId,label: oeCodeName});
-            }
-        });
-        setOECodes(oEcode);
-    }
+    
+    const {refetch} = useQuery('fetchAllocatedDetails', () => getAllocate(userData.mpid), {
+        onSuccess: (data) => {
+            console.log(data);
+        }
+    });
 
-    const onChangeOE = (value) => {
-        setSelectedOe(value);
-        setLayoutSelection({...layoutSelection, oeCodeId: value.value })
+
+    const onChangeEmployee = (value) => {
+        setSelectedEmployee(value);
+        // setLayoutSelection({...layoutSelection, oeCodeId: value.value })
     }
 
     const addFloorRequest = ({startSeat, endSeat, floor, zone, startSeatNum, endSeatNum}) => {
@@ -127,6 +133,7 @@ export const LowLevelView = () => {
     }, {
         onSuccess: (data) => {
             console.log(data);
+            refetch();
         }
     });
 
@@ -138,28 +145,28 @@ export const LowLevelView = () => {
         });
     }
     
-    return <>
+    return !!(isFetching || isMutating) ? <Loader /> : <>
     <AdminWrapper padding={'26px 36px 10px'} gap="5%" >
          <FormWrapper gap='10%' height={'100px'}>
              <FlexBox gap='10%'>
                 <FormContainer column>
-                    <span>Select OE</span>
+                    <span>Select Team Member</span>
                     <StyledSelect 
-                        placeholder="Select OE..." 
+                        placeholder="Select Member..." 
                         styles={customStyles} 
-                        options={oeCodes}
-                        onChange={onChangeOE}
-                        value={selectedOe}   
+                        options={empData}
+                        onChange={onChangeEmployee}
+                        value={selectedEmployee}   
                     />
                 </FormContainer>
              </FlexBox>    
             </FormWrapper>
 
-       {!!selectedOe && <Shadow column height={'100%'}>
+       {!!selectedEmployee && <Shadow column height={'100%'}>
                 <Checkout 
-                    departmentName={'Test Dep'}
-                    oECode={empData.oeCode.name}
-                    employee={empData.oeCode.employee}
+                    departmentName={userData.departmentName}
+                    oECode={userData.oeCode.name}
+                    mpid={selectedEmployee.label}
                 />
                 <Tabs onSelection={addFloorRequest} floorData={layoutData} employees={empCount} container={LowLevelContainer} />
         </Shadow>}

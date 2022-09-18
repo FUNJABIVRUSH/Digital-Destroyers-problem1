@@ -1,10 +1,13 @@
+import { useContext } from 'react';
 import { FaRegUser } from 'react-icons/fa';
 import { FlexBox, FlexItem } from "react-styled-flex";
 import styled from "styled-components"
+import { Context, useAppContext } from '../../App';
 
 
 export const Header = () => {
 
+    const [userData] = useAppContext();
 
     return <StyledHeader>
         <FlexItem flex={3} />
@@ -12,7 +15,7 @@ export const Header = () => {
         <FlexItem flex={3} box justifyContent={'flex-end'} >
             <User >
                 <FaRegUser />
-                Vrushabh Girish Kapoor (M12345)
+                {userData.name} ({userData.mpid})
             </User>
         </FlexItem>
     </StyledHeader>

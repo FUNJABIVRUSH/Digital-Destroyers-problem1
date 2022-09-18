@@ -1,7 +1,7 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useState } from "react";
 import { FlexBox } from "react-styled-flex";
 import styled from "styled-components";
-import { Context } from "../../App";
+import { Context, useAppContext } from "../../App";
 import { getEmployeeByPID } from "../../shared/api";
 import { Link, Redirect, useHistory } from "react-router-dom";
 
@@ -12,13 +12,13 @@ const UserContext = createContext({
 export const Login = () => {
     let history = useHistory();
     const [empPID, setEmpPID] = useState('');
-    const [userData, setUserData] = useContext(Context);
+    const [userData, setUserData] = useAppContext();
     const [pathName, setPathName] = useState();
 
     const login = () => {
         getEmployeeByPID(empPID).then(response => {
             setUserData(response);
-            history.replace('/dashboard')
+            history.push('/dashboard')
         });
     }
     return <StyledLoginContainer alignItems={'center'} justifyContent={'center'} column gap="15px">
