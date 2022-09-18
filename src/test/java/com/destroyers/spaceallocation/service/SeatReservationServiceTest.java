@@ -29,10 +29,10 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-class SeatServiceTest {
+class SeatReservationServiceTest {
 
     @InjectMocks
-    private SeatService seatService;
+    private SeatReservationService seatReservationService;
 
     @Mock
     private SeatDao seatDao;
@@ -61,7 +61,7 @@ class SeatServiceTest {
             when(seatReservationDao.saveAll(any())).thenReturn(List.of(seatReservation));
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
 
-            List<Long> reservationIds = seatService.reserve(new SeatReservationRequest(List.of(new SeatRequest(2L, pid)), List.of(new DateTimeRange(reservationDate, startTime.toString(), endTime.toString()))));
+            List<Long> reservationIds = seatReservationService.reserve(new SeatReservationRequest(List.of(new SeatRequest(2L, pid, List.of(new DateTimeRange(reservationDate, startTime.toString(), endTime.toString()))))));
 
             assertThat(reservationIds).isEqualTo(List.of(1L));
             verify(seatReservationDao).saveAll(List.of(new SeatReservation(null, seat, reservationDate, startTime, endTime, employee)));
@@ -82,7 +82,7 @@ class SeatServiceTest {
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
 
             assertThrows(ResponseStatusException.class,
-                    () -> seatService.reserve(new SeatReservationRequest(List.of(new SeatRequest(2L, pid)), List.of(new DateTimeRange(reservationDate, startTime.toString(), endTime.toString())))),
+                    () -> seatReservationService.reserve(new SeatReservationRequest(List.of(new SeatRequest(2L, pid, List.of(new DateTimeRange(reservationDate, startTime.toString(), endTime.toString())))))),
                     "Seat already reserved for given date & time");
         }
 

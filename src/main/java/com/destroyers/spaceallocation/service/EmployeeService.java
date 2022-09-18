@@ -8,11 +8,17 @@ import com.destroyers.spaceallocation.model.employee.EmployeeResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,8 +35,8 @@ public class EmployeeService {
         this.oeCodeDao = oeCodeDao;
     }
 
-    public List<EmployeeResponse> getAll() {
-        return employeeDao.findAll()
+    public List<EmployeeResponse> getEmployees(Optional<Long> oeCodeId) {
+        return employeeDao.findAll(buildCustomQuery(oeCodeId))
                 .stream()
                 .map(this::getEmployeeResponse)
                 .collect(Collectors.toList());
@@ -49,5 +55,14 @@ public class EmployeeService {
         OECode oeCode = employee.getOeCode();
         List<OECode> oeCodes = oeCodeDao.findAllByParentOECodeId(oeCode.getId());
         return EmployeeResponse.from(employee, oeCodes);
+    }
+
+    private Specification<Employee> buildCustomQuery(Optional<Long> oeCodeIdOptional) {
+        return (root, criteriaQuery, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            oeCodeIdOptional.ifPresent(oeCodeId -> predicates.add(criteriaBuilder.equal(root.get("oeCode"), oeCodeId)));
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
     }
 }

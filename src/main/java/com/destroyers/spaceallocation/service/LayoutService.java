@@ -94,7 +94,7 @@ public class LayoutService {
         return seatReservationDao.findAllBySeatIdInAndReservationDate(seatIds, dateTimeRange.getDate())
                 .stream()
                 .filter(seatReservation ->
-                        (beforeOrEqual(seatReservation.getStartTime(), startTime) && afterOrEqual(seatReservation.getEndTime(), startTime)) ||
+                        (beforeOrEqual(seatReservation.getStartTime(), startTime) && seatReservation.getEndTime().isAfter(startTime)) ||
                                 (afterOrEqual(seatReservation.getStartTime(), endTime) && beforeOrEqual(seatReservation.getEndTime(), endTime)))
                 .map(SeatReservation::getSeat)
                 .map(Seat::getId)
