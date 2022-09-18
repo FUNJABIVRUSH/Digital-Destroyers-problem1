@@ -36,4 +36,7 @@ public class Space {
 
     @Column(name = "end_date", columnDefinition = "DATE")
     private LocalDate endDate;
+
+    @Column(name = "is_confirmed")
+    private Boolean isConfirmed;
 }

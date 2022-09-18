@@ -44,6 +44,9 @@ class SpaceServiceTest {
     @Mock
     private OECodeDao oeCodeDao;
 
+    @Mock
+    private SpaceRequestDao spaceRequestDao;
+
     @Nested
     class AllocateNewSpaceTest {
 
@@ -60,7 +63,7 @@ class SpaceServiceTest {
             when(seatDao.findAllById(List.of(1L, 10L))).thenReturn(List.of(startSeat, endSeat));
             when(seatRangeDao.save(seatRange)).thenReturn(seatRange);
             when(oeCodeDao.findById(1L)).thenReturn(Optional.of(oeCode));
-            when(spaceDao.saveAll(any())).thenReturn(List.of(new Space(2L, seatRange, employee, oeCode, LocalDate.now(), LocalDate.now().plusDays(5L))));
+            when(spaceDao.saveAll(any())).thenReturn(List.of(new Space(2L, seatRange, employee, oeCode, LocalDate.now(), LocalDate.now().plusDays(5L),true)));
 
             FloorRequest floorRequest = new FloorRequest(1L, 10L);
             var allocateSpaceRequest = new AllocateSpaceRequest(1L, LocalDate.now(), LocalDate.now().plusDays(5L), List.of(floorRequest));
@@ -86,12 +89,12 @@ class SpaceServiceTest {
             SeatRange seatRange = new SeatRange(1L, startSeat, endSeat);
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
             when(employee.getOeCode()).thenReturn(oeCode);
-            when(spaceDao.findAllByAssignedOeCodeId(any())).thenReturn(List.of(new Space(1L, seatRange, employee, oeCode, LocalDate.now(), LocalDate.now().plusDays(5L))));
+            when(spaceDao.findAllByAssignedOeCodeIdAndIsConfirmed(any(),eq(Boolean.TRUE))).thenReturn(List.of(new Space(1L, seatRange, employee, oeCode, LocalDate.now(), LocalDate.now().plusDays(5L),true)));
 
             List<SpaceResponse> spaceResponses = spaceService.getSpaceAllocatedTo(pid);
 
             assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse(1L,1L, 1L, 1L, 10L,1L,
-                    LocalDate.now(), LocalDate.now().plusDays(5L))));
+                    true, LocalDate.now(), LocalDate.now().plusDays(5L))));
         }
     }
 
@@ -109,12 +112,12 @@ class SpaceServiceTest {
             Seat endSeat = new Seat(10L, "10", zone, "NON_WINDOW");
             SeatRange seatRange = new SeatRange(1L, startSeat, endSeat);
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
-            when(spaceDao.findAllByCreatedEmployeeId(any())).thenReturn(List.of(new Space(1L, seatRange, employee, oeCode, LocalDate.now(), LocalDate.now().plusDays(5L))));
+            when(spaceDao.findAllByCreatedEmployeeId(any())).thenReturn(List.of(new Space(1L, seatRange, employee, oeCode, LocalDate.now(), LocalDate.now().plusDays(5L),true)));
 
             List<SpaceResponse> spaceResponses = spaceService.getSpaceReservedBy(pid);
 
             assertThat(spaceResponses).isEqualTo(List.of(new SpaceResponse(1L,1L, 1L, 1L, 10L,1L,
-                    LocalDate.now(), LocalDate.now().plusDays(5L))));
+                    true,LocalDate.now(), LocalDate.now().plusDays(5L))));
         }
     }
 
@@ -144,7 +147,7 @@ class SpaceServiceTest {
             OECode oeCode = new OECode(1L,"MBLD",500,null,null,null);
             Employee employee = new Employee(1L,null,null,null,null,oeCode);
             when(employeeDao.findByMpid("M123")).thenReturn(Optional.of(employee));
-            Space space = new Space(1L,null,employee,oeCode,null,null);
+            Space space = new Space(1L,null,employee,oeCode,null,null,true);
             when(spaceDao.findAllById(any())).thenReturn(List.of(space));
 
             spaceService.deleteSpace(null, List.of(1L), "M123");
@@ -163,7 +166,7 @@ class SpaceServiceTest {
             Employee employee = new Employee(1L,null,null,null,null,oeCode);
             Seat startSeat = new Seat(6L,"6",new Zone(1L,"A",new Floor(1L,"",null)),"");
             Seat endSeat = new Seat(3L,"3",new Zone(2L,"B",new Floor(1L,"",null)),"");
-            Space space = new Space(1L,new SeatRange(1L,startSeat,endSeat),employee,oeCode,null,null);
+            Space space = new Space(1L,new SeatRange(1L,startSeat,endSeat),employee,oeCode,null,null,true);
 
 
 
@@ -177,6 +180,36 @@ class SpaceServiceTest {
             spaceService.editSpace(new EditSpaceRequest(2L,3L,6L),1L,"M123");
 
             verify(spaceDao).saveAndFlush(any());
+        }
+    }
+
+    @Nested
+    class RequestSpaceTest {
+
+        @Test
+        void requestShouldGetCreatedForExtraSpace() {
+            String pid = "M12345";
+            Employee employee = new Employee(1L,null,null,null,null,null);
+            Seat startSeat = mock(Seat.class);
+            Seat endSeat = mock(Seat.class);
+            OECode oeCode = new OECode(1L,"MBLD",500,null,null,null);
+            SeatRange seatRange = new SeatRange(null, startSeat, endSeat);
+            Space space = new Space(2L, seatRange, employee, null, LocalDate.now(), LocalDate.now().plusDays(5L), false);
+
+            when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
+            when(seatDao.findAllById(List.of(1L, 10L))).thenReturn(List.of(startSeat, endSeat));
+            when(seatRangeDao.save(seatRange)).thenReturn(seatRange);
+            when(oeCodeDao.findById(1L)).thenReturn(Optional.of(oeCode));
+            when(spaceDao.saveAll(any())).thenReturn(List.of(space));
+            when(spaceRequestDao.save(any(SpaceRequest.class)))
+                    .thenReturn(new SpaceRequest(1L,space,oeCode,employee.getOeCode(),false,LocalDate.now(),null));
+
+            FloorRequest floorRequest = new FloorRequest(1L, 10L);
+            var allocateSpaceRequest = new AllocateSpaceRequest(1L, LocalDate.now(), LocalDate.now().plusDays(5L), List.of(floorRequest));
+
+            List<Long> spaceIds = spaceService.requestSpace(allocateSpaceRequest, pid);
+
+            assertThat(spaceIds).isEqualTo(List.of(1L));
         }
     }
 }

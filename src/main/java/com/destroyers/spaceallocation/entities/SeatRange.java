@@ -20,6 +20,7 @@ public class SeatRange {
     @OneToOne
     @JoinColumn(name = "start_seat_id", referencedColumnName = "id")
     private Seat startSeat;
+
     @OneToOne
     @JoinColumn(name = "end_seat_id", referencedColumnName = "id")
     private Seat endSeat;
