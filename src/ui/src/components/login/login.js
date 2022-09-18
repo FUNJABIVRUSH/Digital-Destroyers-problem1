@@ -1,17 +1,26 @@
-import { useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { FlexBox } from "react-styled-flex";
 import styled from "styled-components";
+import { Context } from "../../App";
 import { getEmployeeByPID } from "../../shared/api";
+import { Link, Redirect, useHistory } from "react-router-dom";
+
+const UserContext = createContext({
+    name: 'Guest',
+});
 
 export const Login = () => {
-
+    let history = useHistory();
     const [empPID, setEmpPID] = useState('');
+    const [userData, setUserData] = useContext(Context);
+    const [pathName, setPathName] = useState();
 
     const login = () => {
-        getEmployeeByPID(empPID).then(response => console.log('res', response)
-        );
+        getEmployeeByPID(empPID).then(response => {
+            setUserData(response);
+            history.replace('/dashboard')
+        });
     }
-
     return <StyledLoginContainer alignItems={'center'} justifyContent={'center'} column gap="15px">
         <StylesSubDiv>
             <h3>Welcome to SAT</h3>
