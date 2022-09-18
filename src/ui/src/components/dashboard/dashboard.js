@@ -1,6 +1,8 @@
 import { FlexBox } from "react-styled-flex";
 import { AdminView } from "../../Views/AdminView/AdminView";
-import { LowLevelView } from "../../Views/RequesterView/RequesterView";
+import { HighLevelView } from "../../Views/HighLevelView/HighLevelView";
+import { LowLevelView } from "../../Views/LowLevelView.js/LowLevelView";
+import { MidLevelView } from "../../Views/MidLevelView/MidLevelView";
 
 
 export const Dashboard = () => {

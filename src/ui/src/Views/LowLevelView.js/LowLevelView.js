@@ -1,10 +1,10 @@
 import {FlexBox} from 'react-styled-flex';
 import styled from 'styled-components';
 import Select from 'react-select';
-import { HighLevelContainer } from './HighlevelContainer';
+import { LowLevelContainer } from './LowLevelConatiner';
 import { Tabs } from '../../common/tabs';
 import {useMutation, useQuery} from 'react-query';
-import { getDepartments, getEmployeeByPID, getLayout, allocate } from '../../shared/api';
+import { getDepartments, getEmployeeByPID, getLayout, allocate, getEmployeeByOE } from '../../shared/api';
 import { useState, useTransition } from 'react';
 import {Checkout} from '../../common/Checkout';
 
@@ -25,7 +25,7 @@ const customStyles = {
 
 
 
-export const HighLevelView = () => {
+export const LowLevelView = () => {
     const [departmentData, setDepartmentData] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [layoutData , setLayoutData] = useState([]);
@@ -41,16 +41,17 @@ export const HighLevelView = () => {
         floorRequests: [],
     });
 
-    useQuery('fetchEmpDetails', getEmployeeByPID, {
+    useQuery('fetchEmployess', getEmployeeByOE, {
         onSuccess: (empData) => {
-            const oECodes = [];
-            setEmpData(empData);
-            if(empData && empData.childOECodes?.length) {
-                empData.childOECodes.forEach(({name, id}) => {
-                    oECodes.push({value: id, label: name});
-                });
-            }
-            setOECodes(oECodes);
+            console.log(empData);
+            // const oECodes = [];
+            // setEmpData(empData);
+            // if(empData && empData.childOECodes?.length) {
+            //     empData.childOECodes.forEach(({name, id}) => {
+            //         oECodes.push({value: id, label: name});
+            //     });
+            // }
+            // setOECodes(oECodes);
         }
     });
 
@@ -160,7 +161,7 @@ export const HighLevelView = () => {
                     oECode={empData.oeCode.name}
                     employee={empData.oeCode.employee}
                 />
-                <Tabs onSelection={addFloorRequest} floorData={layoutData} employees={empCount} container={HighLevelContainer} />
+                <Tabs onSelection={addFloorRequest} floorData={layoutData} employees={empCount} container={LowLevelContainer} />
         </Shadow>}
 
     </AdminWrapper>

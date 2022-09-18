@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import Select from 'react-select';
 import { AdminContainer } from './AdminContainer';
 import { Tabs } from '../../common/tabs';
-import {useQuery} from 'react-query';
-import { getDepartments, getLayout } from '../../shared/api';
+import {useMutation, useQuery} from 'react-query';
+import { allocate, getAllocate, getDepartments, getLayout } from '../../shared/api';
 import { useState, useTransition } from 'react';
 import {Checkout} from '../../common/Checkout';
 
@@ -61,6 +61,12 @@ export const AdminView = () => {
         }
     });
 
+    useQuery('fetchAllocatedDetails', getAllocate, {
+        onSuccess: (data) => {
+            console.log(data);
+        }
+    });
+
     const onChangeDepartment = (value) => {
         setSelectedDept(value);
         const oEcode = [];
@@ -76,7 +82,7 @@ export const AdminView = () => {
         setSelectedOe(value);
         const {totalEmployees} = departmentData.find(({oeCodeId}) => oeCodeId === value.value);
         setEmpCount(totalEmployees);
-        setLayoutSelection({...layoutSelection, oeCodeId: value.value })
+        setLayoutSelection({...layoutSelection, oeCodeId: value.value })    
     }
 
     const addFloorRequest = ({startSeat, endSeat, floor, zone, startSeatNum, endSeatNum}) => {
@@ -128,7 +134,19 @@ export const AdminView = () => {
             floorRequests: [],
         });
     }
+   
+
     
+    const allocateSpace = useMutation((event) =>{
+        event.preventDefault();
+        return allocate({oeCodeId: layoutSelection.oeCodeId,floorRequests: layoutSelection.floorRequests })
+    }, {
+        onSuccess: (data) => {
+            console.log(data);
+        }
+    });
+
+
     return <>
     <AdminWrapper padding={'26px 36px 10px'} gap="5%" >
          <FormWrapper gap='10%' height={'100px'}>
@@ -173,7 +191,7 @@ export const AdminView = () => {
         </FlexBox>
         <FlexBox position='end' gap={'20px'}>
                 <StyledButton variant='secondary' onClick={onClearSelection}>Clear Selection </StyledButton>
-                <StyledButton>Allot Space</StyledButton>
+                <StyledButton onClick={allocateSpace.mutate}>Allot Space</StyledButton>
         </FlexBox>
     </Footer>}
     </>

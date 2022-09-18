@@ -1,4 +1,3 @@
-import Select from "react-select"
 import { FlexBox } from "react-styled-flex"
 import styled from "styled-components"
 
@@ -11,7 +10,7 @@ export const Checkout = ({departmentName, oECode, employees, mpid}) => {
         <Title>{departmentName}</Title>
         <DetailsWrapper column >
             <SubTitle full >{oECode}</SubTitle>
-            {!!employees && <SubText>{employees}</SubText>}
+            {!!employees && <SubText>{employees} Employees</SubText>}
             {!!mpid && <SubText>{mpid}</SubText>}
         </DetailsWrapper>
         {!!employees && <DetailsWrapper column>

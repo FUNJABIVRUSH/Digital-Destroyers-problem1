@@ -1,7 +1,7 @@
 import {FlexBox} from 'react-styled-flex';
 import styled from 'styled-components';
 import Select from 'react-select';
-import { HighLevelContainer } from './HighlevelContainer';
+import { MidLevelContainer } from './MidLevelContainer';
 import { Tabs } from '../../common/tabs';
 import {useMutation, useQuery} from 'react-query';
 import { getDepartments, getEmployeeByPID, getLayout, allocate } from '../../shared/api';
@@ -25,7 +25,7 @@ const customStyles = {
 
 
 
-export const HighLevelView = () => {
+export const MidLevelView = () => {
     const [departmentData, setDepartmentData] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [layoutData , setLayoutData] = useState([]);
@@ -160,7 +160,7 @@ export const HighLevelView = () => {
                     oECode={empData.oeCode.name}
                     employee={empData.oeCode.employee}
                 />
-                <Tabs onSelection={addFloorRequest} floorData={layoutData} employees={empCount} container={HighLevelContainer} />
+                <Tabs onSelection={addFloorRequest} floorData={layoutData} employees={empCount} container={MidLevelContainer} />
         </Shadow>}
 
     </AdminWrapper>

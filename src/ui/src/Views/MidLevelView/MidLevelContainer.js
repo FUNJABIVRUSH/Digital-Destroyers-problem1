@@ -22,7 +22,7 @@ const customStyles = {
   }
 
 
-export const AdminContainer = ({employees, zones, onSelection, floor}) => {
+export const MidLevelContainer = ({employees, zones, onSelection, floor}) => {
 
     const [maxSeating, setMaxSeating] = useState(0);
     const [seatCount, setSeatCount] = useState('');
