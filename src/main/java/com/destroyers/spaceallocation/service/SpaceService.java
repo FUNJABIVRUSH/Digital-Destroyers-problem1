@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -38,16 +39,20 @@ public class SpaceService {
     @Autowired
     private OECodeDao oeCodeDao;
 
+    @Autowired
+    private SpaceRequestDao spaceRequestDao;
+
     public List<SpaceResponse> getSpaceAllocatedTo(String pid) {
         Employee employee = getEmployee(pid);
         OECode oeCode = employee.getOeCode();
-        return spaceDao.findAllByAssignedOeCodeId(oeCode)
+        return spaceDao.findAllByAssignedOeCodeIdAndIsConfirmed(oeCode, true)
                 .stream()
                 .map(SpaceResponse::from)
                 .collect(Collectors.toList());
     }
 
 
+    @Transactional
     public List<Long> allocate(String pid, AllocateSpaceRequest allocateSpaceRequest) {
         Employee employee = getEmployee(pid);
 
@@ -64,11 +69,9 @@ public class SpaceService {
         Long oeCodeId = allocateSpaceRequest.getOeCodeId();
         return floorRequests.stream()
                 .map(floorRequest -> {
-                    List<Seat> seats = seatDao.findAllById(List.of(floorRequest.getStartSeatId(), floorRequest.getEndSeatId()));
-                    OECode oeCode = getOeCode(oeCodeId);
-                    SeatRange seatRange = new SeatRange(null, seats.get(0), seats.get(1));
+                    SeatRange seatRange = getSeatRange(floorRequest);
                     SeatRange savedSeatRange = seatRangeDao.save(seatRange);
-                    return new Space(null, savedSeatRange, employee, oeCode, allocateSpaceRequest.getStartDate(), allocateSpaceRequest.getEndDate());
+                    return new Space(null, savedSeatRange, employee, getOeCode(oeCodeId), allocateSpaceRequest.getStartDate(), allocateSpaceRequest.getEndDate(), true);
                 })
                 .collect(Collectors.toList());
     }
@@ -133,7 +136,7 @@ public class SpaceService {
     public SpaceResponse editSpace(EditSpaceRequest request, Long spaceId, String pid) {
         Employee employee = getEmployee(pid);
         Space space = getSpace(spaceId);
-        if(space.getCreatedEmployeeId().equals(employee)){
+        if (space.getCreatedEmployeeId().equals(employee)) {
             space.setAssignedOeCodeId(getOeCode(request.getOeCodeId()));
             final SeatRange range = space.getRange();
             range.setEndSeat(getSeat(request.getEndSeatId()));
@@ -142,6 +145,40 @@ public class SpaceService {
         }
 
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Transactional
+    public List<Long> requestSpace(AllocateSpaceRequest request, String pid) {
+        Employee employee = getEmployee(pid);
+        List<Space> spaces = createSpaceRequests(employee, request);
+        return spaceDao.saveAll(spaces).stream()
+                .map(space -> createSpaceRequest(request, employee, space))
+                .collect(Collectors.toList());
+    }
+
+    private Long createSpaceRequest(AllocateSpaceRequest request, Employee employee, Space space) {
+        SpaceRequest spaceRequest = new SpaceRequest(null, space, getOeCode(request.getOeCodeId()),
+                employee.getOeCode(), false, LocalDate.now(), null);
+        return spaceRequestDao.save(spaceRequest).getId();
+    }
+
+    private List<Space> createSpaceRequests(Employee employee, AllocateSpaceRequest allocateSpaceRequest) {
+        List<FloorRequest> floorRequests = allocateSpaceRequest.getFloorRequests();
+        return floorRequests.stream()
+                .map(floorRequest -> {
+                    SeatRange seatRange = getSeatRange(floorRequest);
+                    SeatRange savedSeatRange = seatRangeDao.save(seatRange);
+                    return new Space(null, savedSeatRange, employee, null, allocateSpaceRequest.getStartDate(), allocateSpaceRequest.getEndDate(), false);
+                })
+                .collect(Collectors.toList());
+    }
+
+    private SeatRange getSeatRange(FloorRequest floorRequest) {
+        List<Seat> seats = seatDao.findAllById(List.of(floorRequest.getStartSeatId(), floorRequest.getEndSeatId()));
+        if (seats.size() == 2) {
+            return new SeatRange(null, seats.get(0), seats.get(1));
+        }
+        return new SeatRange(null, seats.get(0), seats.get(0));
     }
 }
 

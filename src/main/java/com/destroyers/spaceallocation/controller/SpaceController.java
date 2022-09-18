@@ -46,4 +46,10 @@ public class SpaceController {
                                    @RequestParam String pid){
         return spaceService.editSpace(request,spaceId,pid);
     }
+
+    @PostMapping("/request")
+    public List<Long> requestSpace(@RequestBody AllocateSpaceRequest request,
+                                   @RequestParam String pid){
+        return spaceService.requestSpace(request,pid);
+    }
 }

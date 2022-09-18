@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface SpaceDao extends JpaRepository<Space, Long> {
-    List<Space> findAllByAssignedOeCodeId(OECode assignedOeCodeId);
+    List<Space> findAllByAssignedOeCodeIdAndIsConfirmed(OECode assignedOeCodeId,Boolean isConfirmed);
     List<Space> findAllByCreatedEmployeeId(Employee createdEmployeeId);
     void deleteByAssignedOeCodeId(OECode assignedOeCodeId);
 }

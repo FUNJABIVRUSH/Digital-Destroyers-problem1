@@ -23,9 +23,10 @@ public class SpaceResponse {
     private Long startSeatId;
     private Long endSeatId;
     private Long oeCodeId;
-    @JsonFormat(pattern="yyyy-MM-dd")
+    private Boolean isConfirmed;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
-    @JsonFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
     public static SpaceResponse from(Space space) {
@@ -33,6 +34,7 @@ public class SpaceResponse {
         Seat endSeat = space.getRange().getEndSeat();
         Zone zone = startSeat.getZone();
         Floor floor = zone.getFloor();
-        return new SpaceResponse(space.getId(),floor.getId(), zone.getId(), startSeat.getId(), endSeat.getId(),space.getAssignedOeCodeId().getId(),space.getStartDate(),space.getEndDate());
+        return new SpaceResponse(space.getId(), floor.getId(), zone.getId(), startSeat.getId(), endSeat.getId(),
+                space.getAssignedOeCodeId().getId(), space.getIsConfirmed(), space.getStartDate(), space.getEndDate());
     }
 }
