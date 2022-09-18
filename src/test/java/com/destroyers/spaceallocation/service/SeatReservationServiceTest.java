@@ -7,6 +7,7 @@ import com.destroyers.spaceallocation.entities.Employee;
 import com.destroyers.spaceallocation.entities.Seat;
 import com.destroyers.spaceallocation.entities.SeatReservation;
 import com.destroyers.spaceallocation.model.DateTimeRange;
+import com.destroyers.spaceallocation.model.seat.request.DeleteReservationRequest;
 import com.destroyers.spaceallocation.model.seat.request.SeatRequest;
 import com.destroyers.spaceallocation.model.seat.request.SeatReservationRequest;
 import org.junit.jupiter.api.Nested;
@@ -86,6 +87,27 @@ class SeatReservationServiceTest {
                     "Seat already reserved for given date & time");
         }
 
+    }
+
+    @Nested
+    class DeleteReservation {
+
+        @Test
+        void shouldDeleteReservationForGivenPid() {
+            String pid = "M12345";
+            LocalDate date = LocalDate.now();
+            DeleteReservationRequest reservationRequest = new DeleteReservationRequest(pid, date);
+            Employee employee = mock(Employee.class);
+            SeatReservation seatReservation = mock(SeatReservation.class);
+
+            when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
+            when(employee.getId()).thenReturn(1L);
+            when(seatReservationDao.findAllByEmployeeIdAndReservationDate(1L, date)).thenReturn(List.of(seatReservation));
+
+            seatReservationService.deleteReservations(List.of(reservationRequest));
+
+            verify(seatReservationDao).deleteAll(List.of(seatReservation));
+        }
     }
 
 }
