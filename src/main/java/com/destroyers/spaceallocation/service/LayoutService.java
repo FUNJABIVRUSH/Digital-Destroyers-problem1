@@ -4,7 +4,7 @@ import com.destroyers.spaceallocation.dao.CustomNativeQueryExecutor;
 import com.destroyers.spaceallocation.dao.SeatReservationDao;
 import com.destroyers.spaceallocation.entities.Seat;
 import com.destroyers.spaceallocation.entities.SeatReservation;
-import com.destroyers.spaceallocation.model.DateRange;
+import com.destroyers.spaceallocation.model.DateTimeRange;
 import com.destroyers.spaceallocation.model.space.LayoutQueryResponse;
 import com.destroyers.spaceallocation.model.space.response.FloorResponse;
 import com.destroyers.spaceallocation.model.space.response.LayoutResponse;
@@ -13,11 +13,15 @@ import com.destroyers.spaceallocation.model.space.response.ZoneResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.destroyers.spaceallocation.util.DateTimeUtil.afterOrEqual;
+import static com.destroyers.spaceallocation.util.DateTimeUtil.beforeOrEqual;
 
 @Service
 public class LayoutService {
@@ -33,13 +37,13 @@ public class LayoutService {
         this.seatReservationDao = seatReservationDao;
     }
 
-    public LayoutResponse getLayout(Long buildingId, DateRange dateRange) {
-        return getLayoutResponse(nativeQueryExecutor.getLayoutByBuildingId(buildingId), dateRange);
+    public LayoutResponse getLayout(Long buildingId, DateTimeRange dateTimeRange) {
+        return getLayoutResponse(nativeQueryExecutor.getLayoutByBuildingId(buildingId), dateTimeRange);
     }
 
-    private LayoutResponse getLayoutResponse(List<LayoutQueryResponse> spaceQueryResponses, DateRange dateRange) {
-        Set<Long> reservedSeatIds = Objects.isNull(dateRange) ? Set.of() :
-                getReservedSeatIds(spaceQueryResponses, dateRange);
+    private LayoutResponse getLayoutResponse(List<LayoutQueryResponse> spaceQueryResponses, DateTimeRange dateTimeRange) {
+        Set<Long> reservedSeatIds = Objects.isNull(dateTimeRange) ? Set.of() :
+                getReservedSeatIds(spaceQueryResponses, dateTimeRange);
 
         Map<Long, List<LayoutQueryResponse>> spaceResponseByFloorId = spaceQueryResponses.stream()
                 .collect(Collectors.groupingBy(LayoutQueryResponse::getFloorId));
@@ -80,13 +84,19 @@ public class LayoutService {
         return new SeatResponse(spaceResponse.getSeatId(), spaceResponse.getSeatNumber(), isReserved, spaceResponse.getSeatType());
     }
 
-    private Set<Long> getReservedSeatIds(List<LayoutQueryResponse> spaceQueryResponses, DateRange dateRange) {
+    private Set<Long> getReservedSeatIds(List<LayoutQueryResponse> spaceQueryResponses, DateTimeRange dateTimeRange) {
         List<Long> seatIds = spaceQueryResponses.stream()
                 .map(LayoutQueryResponse::getSeatId)
                 .collect(Collectors.toList());
 
-        return seatReservationDao.getReservationsForSeatIdsAndBetween(seatIds, dateRange.getStartDate(), dateRange.getEndDate())
-                .stream().map(SeatReservation::getSeat)
+        LocalTime startTime = dateTimeRange.getStartTime();
+        LocalTime endTime = dateTimeRange.getEndTime();
+        return seatReservationDao.findAllBySeatIdInAndReservationDate(seatIds, dateTimeRange.getDate())
+                .stream()
+                .filter(seatReservation ->
+                        (beforeOrEqual(seatReservation.getStartTime(), startTime) && afterOrEqual(seatReservation.getEndTime(), startTime)) ||
+                                (afterOrEqual(seatReservation.getStartTime(), endTime) && beforeOrEqual(seatReservation.getEndTime(), endTime)))
+                .map(SeatReservation::getSeat)
                 .map(Seat::getId)
                 .collect(Collectors.toSet());
     }

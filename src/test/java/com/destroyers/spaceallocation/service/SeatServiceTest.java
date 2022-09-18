@@ -6,7 +6,7 @@ import com.destroyers.spaceallocation.dao.SeatReservationDao;
 import com.destroyers.spaceallocation.entities.Employee;
 import com.destroyers.spaceallocation.entities.Seat;
 import com.destroyers.spaceallocation.entities.SeatReservation;
-import com.destroyers.spaceallocation.model.DateRange;
+import com.destroyers.spaceallocation.model.DateTimeRange;
 import com.destroyers.spaceallocation.model.seat.request.SeatRequest;
 import com.destroyers.spaceallocation.model.seat.request.SeatReservationRequest;
 import org.junit.jupiter.api.Nested;
@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,38 +49,41 @@ class SeatServiceTest {
         @Test
         void shouldReserveSeatIfSeatIsWithinSpaceOfUsersOECode() {
             String pid = "M12345";
-            LocalDate startDate = LocalDate.now().plusDays(1);
-            LocalDate endDate = LocalDate.now().plusDays(3);
+            LocalDate reservationDate = LocalDate.now().plusDays(1);
+            LocalTime startTime = LocalTime.now().plusHours(1);
+            LocalTime endTime = LocalTime.now().plusMinutes(9);
+
             Seat seat = new Seat(2L, "2", null, "WINDOW");
             Employee employee = mock(Employee.class);
-            SeatReservation seatReservation = new SeatReservation(1L, seat, startDate, endDate, employee);
+            SeatReservation seatReservation = new SeatReservation(1L, seat, reservationDate, startTime, endTime, employee);
 
             when(seatDao.findById(2L)).thenReturn(Optional.of(seat));
             when(seatReservationDao.saveAll(any())).thenReturn(List.of(seatReservation));
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
 
-            List<Long> reservationIds = seatService.reserve(new SeatReservationRequest(List.of(new SeatRequest(2L, pid)), List.of(new DateRange(startDate, endDate))));
+            List<Long> reservationIds = seatService.reserve(new SeatReservationRequest(List.of(new SeatRequest(2L, pid)), List.of(new DateTimeRange(reservationDate, startTime.toString(), endTime.toString()))));
 
             assertThat(reservationIds).isEqualTo(List.of(1L));
-            verify(seatReservationDao).saveAll(List.of(new SeatReservation(null, seat, startDate, endDate, employee)));
+            verify(seatReservationDao).saveAll(List.of(new SeatReservation(null, seat, reservationDate, startTime, endTime, employee)));
         }
 
         @Test
         void shouldThrowExceptionIfSeatIsAlreadyReserved() {
             String pid = "M12345";
             Employee employee = mock(Employee.class);
-            LocalDate startDate = LocalDate.now().plusDays(1);
-            LocalDate endDate = LocalDate.now().plusDays(3);
+            LocalDate reservationDate = LocalDate.now().plusDays(1);
+            LocalTime startTime = LocalTime.now().plusHours(1);
+            LocalTime endTime = LocalTime.now().plusMinutes(9);
             Seat seat = new Seat(2L, "2", null, "WINDOW");
-            SeatReservation seatReservation = new SeatReservation(1L, seat, startDate, endDate, employee);
+            SeatReservation seatReservation = new SeatReservation(1L, seat, reservationDate, startTime, endTime, employee);
 
             when(seatDao.findById(2L)).thenReturn(Optional.of(seat));
-            when(seatReservationDao.getReservationsBetween(2L, startDate, endDate)).thenReturn(List.of(seatReservation));
+            when(seatReservationDao.findAllBySeatIdInAndReservationDate(List.of(2L), reservationDate)).thenReturn(List.of(seatReservation));
             when(employeeDao.findByMpid(pid)).thenReturn(Optional.of(employee));
 
             assertThrows(ResponseStatusException.class,
-                    () -> seatService.reserve(new SeatReservationRequest(List.of(new SeatRequest(2L, pid)), List.of(new DateRange(startDate, endDate)))),
-                    "Seat already reserved for given dates");
+                    () -> seatService.reserve(new SeatReservationRequest(List.of(new SeatRequest(2L, pid)), List.of(new DateTimeRange(reservationDate, startTime.toString(), endTime.toString())))),
+                    "Seat already reserved for given date & time");
         }
 
     }

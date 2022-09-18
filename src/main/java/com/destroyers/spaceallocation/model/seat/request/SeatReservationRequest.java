@@ -1,6 +1,6 @@
 package com.destroyers.spaceallocation.model.seat.request;
 
-import com.destroyers.spaceallocation.model.DateRange;
+import com.destroyers.spaceallocation.model.DateTimeRange;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -13,5 +13,5 @@ import java.util.List;
 @Data
 public class SeatReservationRequest {
     private List<SeatRequest> seatRequests;
-    private List<DateRange> dateRanges;
+    private List<DateTimeRange> dateTimeRanges;
 }

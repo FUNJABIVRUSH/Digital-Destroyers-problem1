@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -21,11 +22,14 @@ public class SeatReservation {
     @JoinColumn(name = "seat_id", referencedColumnName = "id")
     private Seat seat;
 
-    @Column(name = "start_date", columnDefinition = "DATE")
-    private LocalDate startDate;
+    @Column(name = "reservation_date", columnDefinition = "DATE")
+    private LocalDate reservationDate;
 
-    @Column(name = "end_date", columnDefinition = "DATE")
-    private LocalDate endDate;
+    @Column(name = "start_time", columnDefinition = "TIME")
+    private LocalTime startTime;
+
+    @Column(name = "end_time", columnDefinition = "TIME")
+    private LocalTime endTime;
 
     @OneToOne
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
