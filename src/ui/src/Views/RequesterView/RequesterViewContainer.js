@@ -43,6 +43,10 @@ export const RequesterContainer = ({employees, zones, onSelection, floor}) => {
     const [endSeatNum, setEndSeatNum] = useState('');
     const [selectedSeatValue, setSelectedSeatValue] = useState(null);
 
+    const [date, setDate] = useState(new Date());
+    const [startTime, setStartTime] = useState(null);
+    const [endTime, setEndTime] = useState(null); 
+
 
 
     useEffect(() => {
@@ -163,14 +167,14 @@ export const RequesterContainer = ({employees, zones, onSelection, floor}) => {
             <StyledSelect value={selectedZone} onChange={onZoneChange} options={zoneOptions} styles={customStyles}></StyledSelect>   
         </FieldsWrapper>
         {!!selectedZone  && <><FieldsWrapper>
-            <SubTitle>Date *</SubTitle>
-            <DatePicker />
+            <SubTitle full>Date</SubTitle>
+            <StyledDatePicker minDate={new Date()} selected={date} onChange={(date) => setDate(date)}  />
         </FieldsWrapper>
         <FieldsWrapper>
             <SubTitle> Choose Time: </SubTitle>
-            <input type="time" />
+            <input type="time" value={startTime} onChange={({target}) => setStartTime(target.value)} />
             To 
-            <input type="time" /> 
+            <input type="time" value={endTime} onChange={({target}) => setEndTime(target.value)}  /> 
         </FieldsWrapper>
         <FieldsWrapper>
             <StyledButton  onClick={onAddSelection} disabled={isAddDisabled()}>Add Selection</StyledButton> 
@@ -178,6 +182,10 @@ export const RequesterContainer = ({employees, zones, onSelection, floor}) => {
         </>}
     </FlexBox>
 }
+
+const StyledDatePicker = styled(DatePicker)`
+    height: 1.8rem
+`
 
 const StyledButton = styled.button`
     background: #000000;
