@@ -5,6 +5,8 @@ import com.destroyers.spaceallocation.entities.*;
 import com.destroyers.spaceallocation.model.space.AllocateSpaceRequest;
 import com.destroyers.spaceallocation.model.space.EditSpaceRequest;
 import com.destroyers.spaceallocation.model.space.FloorRequest;
+import com.destroyers.spaceallocation.model.space.response.RequestResponse;
+import com.destroyers.spaceallocation.model.space.response.SpaceRequestResponseWrapper;
 import com.destroyers.spaceallocation.model.space.response.SpaceResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,6 +181,17 @@ public class SpaceService {
             return new SeatRange(null, seats.get(0), seats.get(1));
         }
         return new SeatRange(null, seats.get(0), seats.get(0));
+    }
+
+    public SpaceRequestResponseWrapper getRequestedSpace(String pid) {
+         Employee employee = getEmployee(pid);
+         List<RequestResponse> myRequestsToOther = spaceRequestDao.getAllByRequestOeCodeId(employee.getOeCode())
+                .stream().map(RequestResponse::from)
+                .collect(Collectors.toList());
+        List<RequestResponse> requestToMe = spaceRequestDao.getAllByRequestOeCodeId(employee.getOeCode())
+                .stream().map(RequestResponse::from)
+                .collect(Collectors.toList());
+        return new SpaceRequestResponseWrapper(myRequestsToOther,requestToMe);
     }
 }
 
