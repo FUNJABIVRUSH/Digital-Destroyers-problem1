@@ -28,7 +28,6 @@ INSERT INTO seat(id, number, zone_id, type) VALUES (17, '17', 1, 'WINDOW');
 INSERT INTO seat(id, number, zone_id, type) VALUES (18, '18', 1, 'WINDOW');
 INSERT INTO seat(id, number, zone_id, type) VALUES (19, '19', 1, 'NON_WINDOW');
 INSERT INTO seat(id, number, zone_id, type) VALUES (20, '20', 1, 'NON_WINDOW');
-INSERT INTO seat(id, number, zone_id, type) VALUES (21,'21',1, 'NON_WINDOW');
 INSERT INTO seat(id, number, zone_id, type) VALUES (21,'21',1, 'WINDOW');
 INSERT INTO seat(id, number, zone_id, type) VALUES (22,'22',1, 'WINDOW');
 INSERT INTO seat(id, number, zone_id, type) VALUES (23,'23',1, 'NON_WINDOW');
