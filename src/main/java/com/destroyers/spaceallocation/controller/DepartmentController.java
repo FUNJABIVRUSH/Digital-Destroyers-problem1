@@ -20,6 +20,7 @@ public class DepartmentController {
     }
 
     @GetMapping
+    @CrossOrigin(origins = "*")
     public List<DepartmentResponse> getAll(@RequestParam("pid") String pid){
         return departmentService.getAll(pid);
     }

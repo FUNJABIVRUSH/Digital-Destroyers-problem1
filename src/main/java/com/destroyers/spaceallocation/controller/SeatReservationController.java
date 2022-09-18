@@ -17,11 +17,13 @@ public class SeatReservationController {
     private SeatReservationService seatReservationService;
 
     @PostMapping
+    @CrossOrigin(origins = "*")
     private List<Long> reserveSeat(@RequestBody SeatReservationRequest seatReservationRequest) {
         return seatReservationService.reserve(seatReservationRequest);
     }
 
     @DeleteMapping
+    @CrossOrigin(origins = "*")
     private void deleteReservation(@RequestBody List<DeleteReservationRequest> requests){
         seatReservationService.deleteReservations(requests);
     }

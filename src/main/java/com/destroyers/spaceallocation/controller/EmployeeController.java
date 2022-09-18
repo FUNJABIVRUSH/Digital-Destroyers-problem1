@@ -21,11 +21,13 @@ public class EmployeeController {
     }
 
     @GetMapping
+    @CrossOrigin(origins = "*")
     public List<EmployeeResponse> getEmployees(@RequestParam(required = false) Optional<Long> oeCodeId){
         return employeeService.getEmployees(oeCodeId);
     }
 
     @GetMapping("/{pid}")
+    @CrossOrigin(origins = "*")
     public EmployeeResponse getEmployeeByPid(@PathVariable("pid") String pid){
         return employeeService.getByPid(pid);
     }
