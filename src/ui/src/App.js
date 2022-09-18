@@ -5,9 +5,28 @@ import { Routes } from './routes/routes';
 import { Header } from './components/header/header';
 import styled from 'styled-components';
 import GlobalStyles from './GlobalStyles';
+import { QueryClient, QueryClientProvider } from 'react-query';
+
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+      queries: {
+          refetchOnWindowFocus: false,
+          staleTime: 1000,
+          retry: false,
+          useErrorBoundary: true,
+          refetchOnMount: 'always',
+      
+      },
+      mutations: {
+          retry: false,
+          useErrorBoundary: true,
+      }
+  }
+})
 
 const App = () => {
-  return <>
+  return <QueryClientProvider client={queryClient}>
   <GlobalStyles />
   <Header />
     <Router>
@@ -17,7 +36,7 @@ const App = () => {
       </StyledMain>
     </Switch>
   </Router>
-</>
+</ QueryClientProvider>
 }
 
 

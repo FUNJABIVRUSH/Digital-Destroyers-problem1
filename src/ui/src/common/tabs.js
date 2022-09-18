@@ -23,47 +23,29 @@ const customStyles = {
 
 
 
-export const Tabs = () => {
+export const Tabs = ({container: Container, onSelection, floorData, employee}) => {
 
-    const [selectedTab, setSelectedTab] = useState('tab1');
+    const [selectedTab, setSelectedTab] = useState(floorData[0]?.floorId);
 
-    const options = [
-        {
-            label: 'Zone 1',
-            options: [
-                    {value: 'z1-1', label: '1'},
-                    {value:'z1-2', label: '2'},
-                    {value: 'z1-3', label: '3'}
-            ]
-        },
-        {
-            label: 'Zone 2',
-            options: [
-                    {value: 'z2-1', label: '1'},
-                    {value: 'z2-2', label: '2'},
-                    {value: 'z2-3', label: '3'}
-            ]
-        }
-    ]
+    const [zones, setZones] = useState(floorData[0]?.zones);
+
+    const onTabChange = (floorId, zones) => {
+        setSelectedTab(floorId);
+        setZones(zones)
+    }
 
     return <FlexBox width={'100%'}>
         <TabList>
-            <Tab active={selectedTab === 'tab1'} onClick={() => setSelectedTab('tab1')}>Floor 1</Tab>
-            <Tab active={selectedTab === 'tab2'} onClick={() => setSelectedTab('tab2')}>Floor 2</Tab>
-            <Tab active={selectedTab === 'tab3'} onClick={() => setSelectedTab('tab3')}>Floor 3</Tab>
-            <Tab active={selectedTab === 'tab4'} onClick={() => setSelectedTab('tab4')}>Floor 4</Tab>
+            {
+                floorData.map((floor, index) => <Tab key={index} 
+                    active={selectedTab === floor.floorId} 
+                    onClick={() => onTabChange(floor.floorId, floor.zone)}>
+                        {floor.floorName}
+                </Tab>)
+            }
         </TabList>
         <TabContainer>
-            <FlexBox width={'100%'} justifyContent='space-evenly'>
-            <FieldsWrapper>
-                <SubTitle>No of Seats to be alloted</SubTitle>
-                <StyledInput />
-            </FieldsWrapper>
-            <FieldsWrapper>
-                <SubTitle>Start seat Number</SubTitle>  
-                <StyledSelect  options={options} styles={customStyles}></StyledSelect>      
-            </FieldsWrapper>
-            </FlexBox>
+            <Container onSelection={onSelection} employee={employee} zones={zones} floor={selectedTab} />
         </TabContainer>
     </FlexBox>
 }
@@ -71,11 +53,11 @@ export const Tabs = () => {
 
 const TabList = styled(FlexBox)`
     flex-direction: column;
-    width: 20%;
+    width: 150px;
     height: 100%;
     border: none;
     border-right: 0;
-    padding-top: 36px;
+    padding: 26px 36px 10px;
 `;
 
 const Tab = styled.button`
@@ -87,7 +69,6 @@ const Tab = styled.button`
     cursor: pointer;
     border: none;
     border-left: 3px solid #DCDCDC;
-
     &:hover {
         font-weight: bold;
     }

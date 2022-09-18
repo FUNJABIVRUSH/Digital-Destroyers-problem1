@@ -4,39 +4,20 @@ import styled from "styled-components"
 
 
 
-export const Checkout = () => {
+export const Checkout = ({departmentName, oECode, employees, mpid}) => {
 
 
-    return <CheckoutContainer column>
-        <Title>Department 1</Title>
-            <DetailsWrapper column >
-                <SubTitle large>OE 1</SubTitle>
-                <SubText>OE Owner Name</SubText>
-            </DetailsWrapper>
-            <DetailsWrapper column>
-                <SubTitle large >Employees</SubTitle>
-                <SubText>500</SubText>
-            </DetailsWrapper>
-        <SelectionWrapper column>
-            <SubTitle full center large>Seats Selected</SubTitle>
-        </SelectionWrapper>
-        <DetailsWrapper column>
-            <SubTitle  >Floor 1</SubTitle>
-            <SubText>Zone 1/1-  Zone 1/24</SubText>
+    return <CheckoutContainer width={'100%'} alignItems={'center'} gap="5%">
+        <Title>{departmentName}</Title>
+        <DetailsWrapper column >
+            <SubTitle full >{oECode}</SubTitle>
+            {!!employees && <SubText>{employees}</SubText>}
+            {!!mpid && <SubText>{mpid}</SubText>}
         </DetailsWrapper>
-        <DetailsWrapper column>
-            <SubTitle  >Floor 2</SubTitle>
-            <SubText>Zone 1/1-  Zone 1/24</SubText>
-        </DetailsWrapper>
-
-        <DetailsWrapper column>
-            <SubTitle  large>Floor 2</SubTitle>
-            <SubText>Zone 1/1-  Zone 1/24</SubText>
-        </DetailsWrapper>
-
-        <FlexBox>
-            <button>Allot Space</button>
-        </FlexBox>
+        {!!employees && <DetailsWrapper column>
+            <SubTitle full >Max Allocable Space for</SubTitle>
+            <SubText>{Math.ceil(employees * 65 /100)}</SubText>
+        </DetailsWrapper>}
     </CheckoutContainer>
 }
 
@@ -44,7 +25,7 @@ export const Checkout = () => {
 const Title = styled.div`
     text-align: center;
     font-weight: bold;
-    font-size: 24px;
+    font-size: 20px;
     color: #000000;
 `;
 
@@ -57,14 +38,12 @@ const SubTitle = styled.div`
 `;
 
 const SubText = styled.div`
-    font-size: 13px;
+    font-size: 16px;
     font-weight: bold;
     color: rgb(124,124,123);
 `;
 
 const DetailsWrapper = styled(FlexBox)`
-    margin-top: 8%;
-    margin-left: 8%;
 `;
 
 const SelectionWrapper = styled(FlexBox)`
@@ -84,7 +63,6 @@ const Cell = styled(FlexBox)`
 `
 
 const CheckoutContainer = styled(FlexBox)`
-    width: 50%;
     padding: 36px;
 `;
 

@@ -60,7 +60,7 @@ public class SeatReservationService {
 
     private List<SeatReservation> getSeatReservationsToDelete(DeleteReservationRequest request) {
         Employee employee = getEmployee(request.getPid());
-        return seatReservationDao.findAllByEmployeeIdAndReservationDate(employee.getId(), request.getDate());
+        return seatReservationDao.findAllByEmployeeIdAndSeatIdAndReservationDate(employee.getId(), request.getSeatId(), request.getDate());
     }
 
     private Stream<SeatReservation> getSeatReservations(SeatRequest seatRequest) {
